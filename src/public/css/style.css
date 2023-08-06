@@ -14,7 +14,7 @@ body {
 }
 
 .column > * {
-    border: 2px solid black;
+    /* border: 2px solid black; */
     width: 64px;
     aspect-ratio: 1 / 1;
 }
@@ -24,7 +24,7 @@ body {
 }
 
 .visited {
-    border: 2px solid #0f0;
+    /* border: 2px solid #0f0; */
 }
 
 .floor {
@@ -46,5 +46,32 @@ body {
     aspect-ratio: 1 / 1;
     width: 200px;
     height: 200px;
+    image-rendering: pixelated;
+}
+
+.tile{
+    width: 64px;
+    height: 64px;
+    z-index: 2;
+    position: relative;
+    top: 0px;
+    aspect-ratio: 1 / 1;
+    margin: 0px 0px;
+    float: right;
+    object-fit: contain;
+    image-rendering: pixelated;
+}
+
+.demo {
+    display: flex;
+}
+
+.demo > *{
+    width: 16px;
+    height: 16px;
+    z-index: 2;
+    aspect-ratio: 1 / 1;
+    margin: 0px 0px;
+    object-fit: contain;
     image-rendering: pixelated;
 }

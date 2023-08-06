@@ -7,7 +7,7 @@
     "start:dev": "npm run build && nodemon",
     "start": "npm run build && node ./build/main.js",
     "build": "tsc && npm run copy",
-    "copy": "cp -r src/public/*.html src/public/css ./build/src/public"
+    "copy": "cp -r src/public/*.html src/public/css src/public/assets ./build/src/public"
   },
   "author": "Valquaint",
   "license": "MIT",

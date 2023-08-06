@@ -8,6 +8,7 @@ let directionCount = 0;
 let step = 0;
 const STEPS = [];
 const PATHLEN = 2;
+const wallPatterns = {};
 async function ready() {
     root = document.querySelector("#root");
     if (root) {
@@ -114,24 +115,116 @@ async function processWFC() {
         await testwfc();
     else {
         console.log(`Floor ratio is ${floors / totalCells}`);
-        await validateSteps(floors);
+        if (!await validateSteps(floors)) {
+            document.querySelectorAll(".visited").forEach(ele => ele.classList.remove("visited"));
+            await processMaze(columns, rows);
+            await testwfc();
+        }
+        else
+            await drawWalls("walls_1");
     }
 }
-async function validateSteps(count) {
-    let x = Math.floor(Math.random() * columns);
-    let y = Math.floor(Math.random() * rows);
-    let startCell = cells[x][y];
-    while (startCell.type !== "floor") {
-        x = Math.floor(Math.random() * columns);
-        y = Math.floor(Math.random() * rows);
-        startCell = cells[x][y];
+function validateSteps(count) {
+    return new Promise(async (resolve) => {
+        let x = Math.floor(Math.random() * columns);
+        let y = Math.floor(Math.random() * rows);
+        let startCell = cells[x][y];
+        while (startCell.type !== "floor") {
+            x = Math.floor(Math.random() * columns);
+            y = Math.floor(Math.random() * rows);
+            startCell = cells[x][y];
+        }
+        console.log(`Starting cell for validation: [${x}, ${y}]`);
+        await checkCell(x, y, columns, rows);
+        let validated = document.querySelectorAll(".visited").length;
+        if (validated !== count) {
+            resolve(false);
+        }
+        resolve(true);
+    });
+}
+async function drawWalls(type) {
+    await makeWalls(type);
+    for (let x = 0; x < columns; x++) {
+        for (let y = 0; y < rows; y++) {
+            if (cells[x][y].type !== "floor") {
+                console.log(`Shuffling array... ln 166`);
+                //wallPatterns[type] = patterns;
+                await placeImage(x, y, type);
+            }
+        }
     }
-    console.log(`Starting cell for validation: [${x}, ${y}]`);
-    checkCell(x, y, columns, rows);
-    let validated = document.querySelectorAll(".visited").length;
-    if (validated !== count) {
-        console.log(`Not all floor is reachable. Expected: ${count} -- Only ${validated} reachable.`);
-    }
+}
+function placeImage(x, y, type) {
+    return new Promise(async (resolve) => {
+        const canvas = document.createElement("canvas");
+        canvas.width = 64;
+        canvas.height = 64;
+        const ctx = canvas.getContext("2d");
+        let sections = 0;
+        //console.log(`Shuffling array...`)
+        //wallPatterns[type] = await shuffleArray(wallPatterns[type]) as Array<any>;
+        let sY = 0;
+        let sX = 0;
+        while (sections < 16) {
+            //wallPatterns[type] = await shuffleArray(wallPatterns[type]) as Array<any>;
+            const pX = Math.floor(Math.random() * 16) * 16;
+            //console.log(`Cell: ${x}, ${y}\n-- Subcell: X: ${sX}, Y: ${sY}`)
+            //console.log(part);
+            //debugger
+            console.log(`Placing section at internal ${sX}, ${sY}, pX ${pX * 16}`);
+            ctx.putImageData(wallPatterns[type], (sX * 16) - pX, (sY * 16), pX, 0, 16, 16);
+            sections++;
+            sX++;
+            if (sections % 4 === 0) {
+                sY++;
+                sX = 0;
+            }
+            //if(sections === 3) debugger
+        }
+        //ctx.putImageData(wallPatterns[type], 0, 0)
+        //console.log(`Painted cell ${x}, ${y}`)
+        const cell = document.querySelector(`.cell-${x}-${y}.wall`);
+        canvas.classList.add("tile");
+        cell?.appendChild(canvas);
+        resolve(true);
+    });
+}
+function makeWalls(asset) {
+    return new Promise(async (resolve) => {
+        const demo = document.querySelector("#demo");
+        demo.classList.add("demo");
+        const canva = document.createElement("canvas");
+        canva.width = 256;
+        canva.height = 16;
+        const img = new Image();
+        demo.appendChild(canva);
+        await loadAsset(canva, img, asset, 0, 0);
+        console.log(wallPatterns);
+        resolve(true);
+    });
+}
+function loadAsset(canvas, image, asset, x, y) {
+    return new Promise((resolve) => {
+        // canva.style.width = "160px";
+        // canva.style.height = "160px";
+        const ctx = canvas.getContext("2d");
+        // @ts-ignore
+        image.context = ctx;
+        //console.log((rX * 16), (rY * 16))
+        image.onload = (e) => {
+            renderWall(e, image, 0, 0, 256, 16, 0, 0, 256, 16);
+            // @ts-ignore
+            wallPatterns[asset] = image.context.getImageData(0, 0, 256, 16);
+            resolve(true);
+        };
+        //console.log(`Loading asset location ${x * 16}, ${y * 16}`);
+        image.src = `assets/${asset}.png`;
+    });
+}
+// @ts-ignore
+function renderWall(event, image, sX, sY, sW, sH, dX, dY, dW, dH) {
+    event.target.context.drawImage(image, sX, sY, sW, sH, dX, dY, dW, dH);
 }
 function start(id) {
     return new Promise((resolve) => {
@@ -194,26 +287,6 @@ async function processMaze(maxX, maxY) {
         }
         x++;
     }
-    let DIRECTIONS = [
-        {
-            x: 0,
-            y: -1
-        },
-        {
-            x: 0,
-            y: 1
-        },
-        {
-            x: -1,
-            y: 0
-        },
-        {
-            x: 1,
-            y: 0
-        },
-    ];
-    //const DIR = getRandDir(DIRECTIONS);
-    //checkCell(1 + Math.floor(Math.random() * (maxX - 2)), 1 + Math.floor(Math.random() * (maxY - 2)), maxX, maxY, DIR);
     console.log("Done");
     return true;
 }
@@ -286,15 +359,17 @@ function hasNeighbor(x, y, maxX, maxY) {
         return false;
 }
 function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        const temp = array[i];
-        array[i] = array[j];
-        array[j] = temp;
-    }
-    return array;
+    return new Promise((resolve) => {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            const temp = array[i];
+            array[i] = array[j];
+            array[j] = temp;
+        }
+        resolve(array);
+    });
 }
-function checkCell(x, y, maxX, maxY) {
+async function checkCell(x, y, maxX, maxY) {
     markCellVisited(x, y, maxX, maxY);
     let DIRECTIONS = [
         {
@@ -314,7 +389,7 @@ function checkCell(x, y, maxX, maxY) {
             y: 0
         },
     ];
-    DIRECTIONS = shuffleArray(DIRECTIONS);
+    DIRECTIONS = await shuffleArray(DIRECTIONS);
     // @ts-ignore
     //document.querySelector(`.cell-${x}-${y}`).style.backgroundColor = "#0f0";
     //console.log("Direction Count:", directionCount, PATHLEN)
@@ -340,7 +415,7 @@ function checkCell(x, y, maxX, maxY) {
                 //DIRECTIONS.splice((DIRECTIONS.indexOf(DIR)));
             }
             else {
-                checkCell(x + DIR.x, y + DIR.y, maxX, maxY);
+                await checkCell(x + DIR.x, y + DIR.y, maxX, maxY);
             }
         }
     }

@@ -182,6 +182,15 @@ function placeImage(x, y, pattern, type) {
             //debugger
             console.log(`Placing section at internal ${sX}, ${sY}, pX ${pX}`);
             ctx.putImageData(pattern, (sX * 16) - pX, (sY * 16), pX, 0, 16, 16);
+            if (type === "floor") {
+                console.log("Shuffling alpha colors");
+                let alpha = await shuffleArray("0369fffffffffffffff".split(""));
+                console.log(alpha);
+                const fillStyle = "#000000".padEnd(9, alpha[(Math.floor(Math.random() * alpha.length))]);
+                console.log(`Settings fillStyle for location [${x}, ${y}] sub section [${sX}, ${sY}] to ${fillStyle}`);
+                ctx.fillStyle = fillStyle;
+                ctx.fillRect((sX * 16), (sY * 16), 16, 16);
+            }
             sections++;
             sX++;
             if (sections % 4 === 0) {
@@ -199,10 +208,6 @@ function placeImage(x, y, pattern, type) {
             else {
                 ctx.fillRect(0, 0, 64, 64);
             }
-        }
-        else {
-            ctx.fillStyle = "#00000088";
-            ctx.fillRect(0, 0, 64, 64);
         }
         //ctx.putImageData(wallPatterns[type], 0, 0)
         //console.log(`Painted cell ${x}, ${y}`)

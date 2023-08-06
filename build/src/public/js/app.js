@@ -4,6 +4,24 @@ let rows = 20;
 let columns = 20;
 let MAP;
 let PLAYER;
+const DIRECTIONS = [
+    {
+        x: 0,
+        y: -1
+    },
+    {
+        x: 0,
+        y: 1
+    },
+    {
+        x: -1,
+        y: 0
+    },
+    {
+        x: 1,
+        y: 0
+    },
+];
 async function ready() {
     root = document.querySelector("#root");
     PLAYER = new Entity("Player", 10, 1, 1, 1);
@@ -46,41 +64,54 @@ async function clearMap() {
 }
 async function Generate(map) {
     await clearMap();
-    MAP = new GameMap(columns, rows, map);
+    MAP = new GameMap(columns, rows, map, DIRECTIONS);
     await MAP.processMaze(columns, rows);
     await MAP.testwfc();
 }
 async function RegisterHotkeys() {
-    document.addEventListener("keydown", handleMove);
+    document.addEventListener("keydown", keyDown);
 }
-function handleMove(event) {
+async function keyDown(event) {
     switch (event.key) {
         case "w":
         case "W":
         case "ArrowUp":
             event.preventDefault();
+            await move(0);
             console.log("UP");
             break;
         case "a":
         case "A":
         case "ArrowLeft":
             event.preventDefault();
+            await move(2);
             console.log("LEFT");
             break;
         case "s":
         case "S":
         case "ArrowDown":
             event.preventDefault();
+            await move(1);
             console.log("DOWN");
             break;
         case "d":
         case "D":
         case "ArrowRight":
             event.preventDefault();
+            await move(3);
             console.log("RIGHT");
             break;
         default:
             return true;
     }
+}
+function move(direction) {
+    return new Promise((resolve) => {
+        if (PLAYER.canMove) {
+            console.log(DIRECTIONS[direction]);
+            PLAYER.Move(DIRECTIONS[direction]);
+            resolve(true);
+        }
+    });
 }
 document.addEventListener("DOMContentLoaded", ready);

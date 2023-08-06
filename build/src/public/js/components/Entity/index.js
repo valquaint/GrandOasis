@@ -5,6 +5,7 @@ class Entity {
     damage;
     x;
     y;
+    movable = true;
     constructor(name, hp, damage, x, y) {
         this.name = name;
         this.hp = hp;
@@ -19,8 +20,15 @@ class Entity {
             console.log(`I should call ${source.name}.death()`);
         }
     }
-    // TODO: change type from number to custom DIRECTION class
     async Move(dir) {
         console.log(`Moving ${this.name} in direction ${dir}`);
+        this.movable = false;
+        setTimeout(() => { this.movable = true; }, 1000);
+    }
+    get canMove() {
+        return this.movable;
+    }
+    set canMove(v) {
+        this.canMove = v;
     }
 }

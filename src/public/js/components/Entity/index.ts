@@ -1,10 +1,11 @@
+
 class Entity {
     name:string;
     hp:number;
     damage:number;
     x:number;
     y:number;
-
+    movable:boolean = true;
     constructor(name:string, hp:number, damage:number, x:number, y:number){
         this.name = name;
         this.hp = hp;
@@ -21,8 +22,21 @@ class Entity {
         }
     }
 
-    // TODO: change type from number to custom DIRECTION class
-    public async Move(dir:number){
+    public async Move(dir:Direction){
         console.log(`Moving ${this.name} in direction ${dir}`);
+        this.movable = false;
+        setTimeout(() => { this.movable = true }, 1000);
     }
+
+    
+    public get canMove() : boolean {
+        return this.movable;
+    }
+
+    
+    public set canMove(v : boolean) {
+        this.canMove = v;
+    }
+    
+    
 }

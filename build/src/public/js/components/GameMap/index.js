@@ -12,15 +12,17 @@ class GameMap {
     columns;
     rows;
     style;
+    DIRECTIONS;
     pixelTypes = {
         "0,0,0,255": "wall",
         "255,255,255,255": "floor",
         "255,0,0,255": this.markCellAsEither.bind(this)
     };
-    constructor(columns, rows, style) {
+    constructor(columns, rows, style, directions) {
         this.columns = columns;
         this.rows = rows;
         this.style = style;
+        this.DIRECTIONS = directions;
     }
     findPixel(image, x, y) {
         let start = y * image.width + x;
@@ -365,25 +367,7 @@ class GameMap {
     }
     async checkCell(x, y, maxX, maxY) {
         this.markCellVisited(x, y, maxX, maxY);
-        let DIRECTIONS = [
-            {
-                x: 0,
-                y: -1
-            },
-            {
-                x: 0,
-                y: 1
-            },
-            {
-                x: -1,
-                y: 0
-            },
-            {
-                x: 1,
-                y: 0
-            },
-        ];
-        DIRECTIONS = await this.shuffleArray(DIRECTIONS);
+        let myDirections = await this.shuffleArray(this.DIRECTIONS);
         // @ts-ignore
         //document.querySelector(`.cell-${x}-${y}`).style.backgroundColor = "#0f0";
         //console.log("Direction Count:", directionCount, PATHLEN)
@@ -392,7 +376,7 @@ class GameMap {
         chooses random direction that is not same direction it came from
         */
         //console.log(previousDirection, DIRECTIONS)
-        for (const DIR of DIRECTIONS) {
+        for (const DIR of myDirections) {
             if (!this.checkIfNeighborIsVisited(x + DIR.x, y + DIR.y, maxX, maxY)) {
                 if (this.checkIfWall(x + DIR.x, y + DIR.y, maxX, maxY)) {
                 }

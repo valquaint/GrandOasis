@@ -1,3 +1,4 @@
+
 class GameMap {
     cells: any;
     lastDirection: any; // TODO: type this
@@ -11,16 +12,18 @@ class GameMap {
     columns:number;
     rows:number;
     style:string;
+    DIRECTIONS
     pixelTypes: { [key: string]: string | Function; } = {
 
     "0,0,0,255": "wall",
     "255,255,255,255": "floor",
     "255,0,0,255": this.markCellAsEither.bind(this)
 }
-    constructor(columns:number, rows:number, style:string){
+    constructor(columns:number, rows:number, style:string, directions:Direction[]){
         this.columns = columns;
         this.rows = rows;
         this.style = style;
+        this.DIRECTIONS = directions;
     }
 
 findPixel(image: ImageData, x: number, y: number) {
@@ -387,25 +390,7 @@ shuffleArray(array: Array<any>) {
 
 async checkCell(x: number, y: number, maxX: number, maxY: number) {
     this.markCellVisited(x, y, maxX, maxY);
-    let DIRECTIONS = [ // UP/DOWN/LEFT/RIGHT
-        {
-            x: 0,
-            y: -1
-        },
-        {
-            x: 0,
-            y: 1
-        },
-        {
-            x: -1,
-            y: 0
-        },
-        {
-            x: 1,
-            y: 0
-        },
-    ]
-    DIRECTIONS = await this.shuffleArray(DIRECTIONS) as Array<any>;
+    let myDirections  = await this.shuffleArray(this.DIRECTIONS) as Array<any>;
 
     // @ts-ignore
     //document.querySelector(`.cell-${x}-${y}`).style.backgroundColor = "#0f0";
@@ -416,7 +401,7 @@ async checkCell(x: number, y: number, maxX: number, maxY: number) {
     chooses random direction that is not same direction it came from
     */
     //console.log(previousDirection, DIRECTIONS)
-    for (const DIR of DIRECTIONS) {
+    for (const DIR of myDirections) {
         if (!this.checkIfNeighborIsVisited(x + DIR.x, y + DIR.y, maxX, maxY)) {
             if (this.checkIfWall(x + DIR.x, y + DIR.y, maxX, maxY)) {
 

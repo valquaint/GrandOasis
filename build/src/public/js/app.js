@@ -58,7 +58,7 @@ async function testwfc() {
     canva.id = "baseImg";
     canva.width = 5;
     canva.height = 5;
-    const ctx = canva.getContext("2d");
+    const ctx = canva.getContext("2d", { willReadFrequently: true });
     ctx.fillRect(0, 0, 5, 5);
     ctx.fillStyle = "white";
     ctx.fillRect(0, 3, 5, 1);
@@ -72,7 +72,7 @@ async function testwfc() {
     await start(img);
     canva.height = rows;
     canva.width = columns;
-    const maze = document.querySelector("#output").getContext("2d").getImageData(0, 0, canva.width, canva.height);
+    const maze = document.querySelector("#output").getContext("2d", { willReadFrequently: true }).getImageData(0, 0, canva.width, canva.height);
     //console.log(maze)
     for (let x = 0; x < canva.width; x++) {
         for (let y = 0; y < canva.height; y++) {
@@ -160,7 +160,7 @@ function placeImage(x, y, type) {
         const canvas = document.createElement("canvas");
         canvas.width = 64;
         canvas.height = 64;
-        const ctx = canvas.getContext("2d");
+        const ctx = canvas.getContext("2d", { willReadFrequently: true });
         let sections = 0;
         //console.log(`Shuffling array...`)
         //wallPatterns[type] = await shuffleArray(wallPatterns[type]) as Array<any>;
@@ -208,7 +208,7 @@ function loadAsset(canvas, image, asset, x, y) {
     return new Promise((resolve) => {
         // canva.style.width = "160px";
         // canva.style.height = "160px";
-        const ctx = canvas.getContext("2d");
+        const ctx = canvas.getContext("2d", { willReadFrequently: true });
         // @ts-ignore
         image.context = ctx;
         //console.log((rX * 16), (rY * 16))
@@ -231,7 +231,7 @@ function start(id) {
         let output = document.querySelector("#output");
         if (!output)
             return;
-        const ctx = output.getContext("2d");
+        const ctx = output.getContext("2d", { willReadFrequently: true });
         const imgData = ctx.createImageData(columns, rows);
         // input, width, height, N, outputWidth, outputHeight, periodicInput, periodicOutput, symmetry, ground
         // @ts-expect-error

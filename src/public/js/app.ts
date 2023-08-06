@@ -69,7 +69,7 @@ async function testwfc() {
     canva.id = "baseImg";
     canva.width = 5;
     canva.height = 5;
-    const ctx: CanvasRenderingContext2D = canva.getContext("2d") as CanvasRenderingContext2D;
+    const ctx: CanvasRenderingContext2D = canva.getContext("2d",{willReadFrequently: true}) as CanvasRenderingContext2D;
     ctx.fillRect(0, 0, 5, 5);
     ctx.fillStyle = "white";
     ctx.fillRect(0, 3, 5, 1);
@@ -83,7 +83,7 @@ async function testwfc() {
     await start(img);
     canva.height = rows;
     canva.width = columns;
-    const maze: ImageData = ((document.querySelector("#output") as HTMLCanvasElement).getContext("2d") as CanvasRenderingContext2D).getImageData(0, 0, canva.width, canva.height);
+    const maze: ImageData = ((document.querySelector("#output") as HTMLCanvasElement).getContext("2d",{willReadFrequently: true}) as CanvasRenderingContext2D).getImageData(0, 0, canva.width, canva.height);
     //console.log(maze)
     for (let x = 0; x < canva.width; x++) {
         for (let y = 0; y < canva.height; y++) {
@@ -179,7 +179,7 @@ function placeImage(x: number, y: number, type: string) {
         const canvas: HTMLCanvasElement = document.createElement("canvas") as HTMLCanvasElement;
         canvas.width = 64;
         canvas.height = 64;
-        const ctx: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D;
+        const ctx: CanvasRenderingContext2D = canvas.getContext("2d",{willReadFrequently: true}) as CanvasRenderingContext2D;
         let sections = 0;
         //console.log(`Shuffling array...`)
         //wallPatterns[type] = await shuffleArray(wallPatterns[type]) as Array<any>;
@@ -234,7 +234,7 @@ function loadAsset(canvas: HTMLCanvasElement, image: HTMLImageElement, asset: st
     return new Promise((resolve) => {
         // canva.style.width = "160px";
         // canva.style.height = "160px";
-        const ctx: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D;
+        const ctx: CanvasRenderingContext2D = canvas.getContext("2d",{willReadFrequently: true}) as CanvasRenderingContext2D;
         // @ts-ignore
         image.context = ctx;
         //console.log((rX * 16), (rY * 16))
@@ -259,7 +259,7 @@ function start(id: ImageData) {
     return new Promise((resolve) => {
         let output: HTMLCanvasElement = document.querySelector("#output") as HTMLCanvasElement;
         if (!output) return;
-        const ctx: CanvasRenderingContext2D = output.getContext("2d") as CanvasRenderingContext2D;
+        const ctx: CanvasRenderingContext2D = output.getContext("2d",{willReadFrequently: true}) as CanvasRenderingContext2D;
         const imgData = ctx.createImageData(columns, rows);
         // input, width, height, N, outputWidth, outputHeight, periodicInput, periodicOutput, symmetry, ground
         // @ts-expect-error

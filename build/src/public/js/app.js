@@ -9,6 +9,7 @@ let step = 0;
 const STEPS = [];
 const PATHLEN = 2;
 const wallPatterns = {};
+const floorPatterns = {};
 async function ready() {
     root = document.querySelector("#root");
     if (root) {
@@ -148,22 +149,29 @@ async function drawWalls(type) {
     for (let x = 0; x < columns; x++) {
         for (let y = 0; y < rows; y++) {
             if (cells[x][y].type !== "floor") {
-                console.log(`Shuffling array... ln 166`);
-                //wallPatterns[type] = patterns;
-                await placeImage(x, y, type);
+                await placeImage(x, y, wallPatterns[type], "wall");
+            }
+        }
+    }
+    await drawFloors("floors_1");
+}
+async function drawFloors(type) {
+    await makeFloors(type);
+    for (let x = 0; x < columns; x++) {
+        for (let y = 0; y < rows; y++) {
+            if (cells[x][y].type == "floor") {
+                await placeImage(x, y, floorPatterns[type], "floor");
             }
         }
     }
 }
-function placeImage(x, y, type) {
+function placeImage(x, y, pattern, type) {
     return new Promise(async (resolve) => {
         const canvas = document.createElement("canvas");
         canvas.width = 64;
         canvas.height = 64;
         const ctx = canvas.getContext("2d", { willReadFrequently: true });
         let sections = 0;
-        //console.log(`Shuffling array...`)
-        //wallPatterns[type] = await shuffleArray(wallPatterns[type]) as Array<any>;
         let sY = 0;
         let sX = 0;
         while (sections < 16) {
@@ -173,7 +181,7 @@ function placeImage(x, y, type) {
             //console.log(part);
             //debugger
             console.log(`Placing section at internal ${sX}, ${sY}, pX ${pX}`);
-            ctx.putImageData(wallPatterns[type], (sX * 16) - pX, (sY * 16), pX, 0, 16, 16);
+            ctx.putImageData(pattern, (sX * 16) - pX, (sY * 16), pX, 0, 16, 16);
             sections++;
             sX++;
             if (sections % 4 === 0) {
@@ -184,15 +192,21 @@ function placeImage(x, y, type) {
         }
         ctx.fillStyle = "#00000067";
         console.log(`Checking cell [${x},${y + 1}]`);
-        if (!checkIfWall(x, y + 1, columns, rows)) {
-            ctx.fillRect(0, 0, 64, 40);
+        if (type === "wall") {
+            if (!checkIfWall(x, y + 1, columns, rows)) {
+                ctx.fillRect(0, 0, 64, 40);
+            }
+            else {
+                ctx.fillRect(0, 0, 64, 64);
+            }
         }
         else {
+            ctx.fillStyle = "#00000088";
             ctx.fillRect(0, 0, 64, 64);
         }
         //ctx.putImageData(wallPatterns[type], 0, 0)
         //console.log(`Painted cell ${x}, ${y}`)
-        const cell = document.querySelector(`.cell-${x}-${y}.wall`);
+        const cell = document.querySelector(`.cell-${x}-${y}`);
         canvas.classList.add("tile");
         cell?.appendChild(canvas);
         resolve(true);
@@ -207,8 +221,21 @@ function makeWalls(asset) {
         canva.height = 16;
         const img = new Image();
         demo.appendChild(canva);
-        await loadAsset(canva, img, asset, 0, 0);
+        wallPatterns[asset] = await loadAsset(canva, img, asset, 0, 0);
         console.log(wallPatterns);
+        resolve(true);
+    });
+}
+function makeFloors(asset) {
+    return new Promise(async (resolve) => {
+        const demo = document.querySelector("#demo");
+        const canva = document.createElement("canvas");
+        canva.width = 256;
+        canva.height = 16;
+        const img = new Image();
+        demo.appendChild(canva);
+        floorPatterns[asset] = await loadAsset(canva, img, asset, 0, 0);
+        console.log(floorPatterns);
         resolve(true);
     });
 }
@@ -223,8 +250,7 @@ function loadAsset(canvas, image, asset, x, y) {
         image.onload = (e) => {
             renderWall(e, image, 0, 0, 256, 16, 0, 0, 256, 16);
             // @ts-ignore
-            wallPatterns[asset] = image.context.getImageData(0, 0, 256, 16);
-            resolve(true);
+            resolve(image.context.getImageData(0, 0, 256, 16));
         };
         //console.log(`Loading asset location ${x * 16}, ${y * 16}`);
         image.src = `assets/${asset}.png`;

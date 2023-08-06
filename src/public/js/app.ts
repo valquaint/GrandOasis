@@ -7,9 +7,8 @@ let directionCount: number = 0;
 let step: number = 0;
 const STEPS: HTMLElement[] = [];
 const PATHLEN: number = 2;
-const wallPatterns: { [key: string]: ImageData } = {
-
-};
+const wallPatterns: { [key: string]: ImageData } = {};
+const floorPatterns: { [key: string]: ImageData } = {};
 async function ready() {
     root = document.querySelector("#root");
     if (root) {
@@ -69,7 +68,7 @@ async function testwfc() {
     canva.id = "baseImg";
     canva.width = 5;
     canva.height = 5;
-    const ctx: CanvasRenderingContext2D = canva.getContext("2d",{willReadFrequently: true}) as CanvasRenderingContext2D;
+    const ctx: CanvasRenderingContext2D = canva.getContext("2d", { willReadFrequently: true }) as CanvasRenderingContext2D;
     ctx.fillRect(0, 0, 5, 5);
     ctx.fillStyle = "white";
     ctx.fillRect(0, 3, 5, 1);
@@ -83,7 +82,7 @@ async function testwfc() {
     await start(img);
     canva.height = rows;
     canva.width = columns;
-    const maze: ImageData = ((document.querySelector("#output") as HTMLCanvasElement).getContext("2d",{willReadFrequently: true}) as CanvasRenderingContext2D).getImageData(0, 0, canva.width, canva.height);
+    const maze: ImageData = ((document.querySelector("#output") as HTMLCanvasElement).getContext("2d", { willReadFrequently: true }) as CanvasRenderingContext2D).getImageData(0, 0, canva.width, canva.height);
     //console.log(maze)
     for (let x = 0; x < canva.width; x++) {
         for (let y = 0; y < canva.height; y++) {
@@ -163,56 +162,66 @@ async function drawWalls(type: string) {
     for (let x = 0; x < columns; x++) {
         for (let y = 0; y < rows; y++) {
             if (cells[x][y].type !== "floor") {
-                console.log(`Shuffling array... ln 166`)
-
-                //wallPatterns[type] = patterns;
-                await placeImage(x, y, type);
-
+                await placeImage(x, y, wallPatterns[type], "wall");
             }
         }
     }
-
+    await drawFloors("floors_1");
 }
 
-function placeImage(x: number, y: number, type: string) {
+async function drawFloors(type: string) {
+    await makeFloors(type);
+    for (let x = 0; x < columns; x++) {
+        for (let y = 0; y < rows; y++) {
+            if (cells[x][y].type == "floor") {
+                await placeImage(x, y, floorPatterns[type], "floor");
+            }
+        }
+    }
+}
+
+function placeImage(x: number, y: number, pattern: ImageData, type: string) {
     return new Promise(async (resolve) => {
         const canvas: HTMLCanvasElement = document.createElement("canvas") as HTMLCanvasElement;
         canvas.width = 64;
         canvas.height = 64;
-        const ctx: CanvasRenderingContext2D = canvas.getContext("2d",{willReadFrequently: true}) as CanvasRenderingContext2D;
+        const ctx: CanvasRenderingContext2D = canvas.getContext("2d", { willReadFrequently: true }) as CanvasRenderingContext2D;
         let sections = 0;
-        //console.log(`Shuffling array...`)
-        //wallPatterns[type] = await shuffleArray(wallPatterns[type]) as Array<any>;
         let sY = 0;
         let sX = 0;
         while (sections < 16) {
-
             //wallPatterns[type] = await shuffleArray(wallPatterns[type]) as Array<any>;
-            const pX = Math.floor(Math.random() * 16)*16;
+            const pX = Math.floor(Math.random() * 16) * 16;
             //console.log(`Cell: ${x}, ${y}\n-- Subcell: X: ${sX}, Y: ${sY}`)
             //console.log(part);
             //debugger
 
             console.log(`Placing section at internal ${sX}, ${sY}, pX ${pX}`)
-            ctx.putImageData(wallPatterns[type], (sX * 16) - pX, (sY * 16), pX, 0, 16, 16)
+            ctx.putImageData(pattern, (sX * 16) - pX, (sY * 16), pX, 0, 16, 16)
             sections++;
-            sX ++;
-            if(sections % 4 === 0){
-                sY ++;
+            sX++;
+            if (sections % 4 === 0) {
+                sY++;
                 sX = 0;
             }
             //if(sections === 3) debugger
         }
-        ctx.fillStyle ="#00000067";
-        console.log(`Checking cell [${x},${y+1}]`)
-        if(!checkIfWall(x,y+1,columns,rows)){
-            ctx.fillRect(0,0,64,40)
+        ctx.fillStyle = "#00000067";
+        console.log(`Checking cell [${x},${y + 1}]`)
+        if (type === "wall") {
+            if (!checkIfWall(x, y + 1, columns, rows)) {
+                ctx.fillRect(0, 0, 64, 40)
+            } else {
+                ctx.fillRect(0, 0, 64, 64)
+            }
         }else{
-            ctx.fillRect(0,0,64,64)
+            ctx.fillStyle = "#00000088";
+            ctx.fillRect(0, 0, 64, 64);
         }
+
         //ctx.putImageData(wallPatterns[type], 0, 0)
         //console.log(`Painted cell ${x}, ${y}`)
-        const cell = document.querySelector(`.cell-${x}-${y}.wall`);
+        const cell = document.querySelector(`.cell-${x}-${y}`);
         canvas.classList.add("tile");
         cell?.appendChild(canvas);
         resolve(true)
@@ -228,8 +237,23 @@ function makeWalls(asset: string) {
         canva.height = 16;
         const img = new Image();
         demo.appendChild(canva)
-        await loadAsset(canva, img, asset, 0, 0);
+        wallPatterns[asset] = await loadAsset(canva, img, asset, 0, 0);
         console.log(wallPatterns);
+        resolve(true)
+    })
+
+}
+
+function makeFloors(asset: string) {
+    return new Promise(async (resolve) => {
+        const demo = document.querySelector("#demo") as HTMLElement;
+        const canva = document.createElement("canvas");
+        canva.width = 256;
+        canva.height = 16;
+        const img = new Image();
+        demo.appendChild(canva)
+        floorPatterns[asset] = await loadAsset(canva, img, asset, 0, 0);
+        console.log(floorPatterns);
         resolve(true)
     })
 
@@ -237,19 +261,18 @@ function makeWalls(asset: string) {
 
 
 
-function loadAsset(canvas: HTMLCanvasElement, image: HTMLImageElement, asset: string, x: number, y: number) {
+function loadAsset(canvas: HTMLCanvasElement, image: HTMLImageElement, asset: string, x: number, y: number):Promise<ImageData> {
     return new Promise((resolve) => {
         // canva.style.width = "160px";
         // canva.style.height = "160px";
-        const ctx: CanvasRenderingContext2D = canvas.getContext("2d",{willReadFrequently: true}) as CanvasRenderingContext2D;
+        const ctx: CanvasRenderingContext2D = canvas.getContext("2d", { willReadFrequently: true }) as CanvasRenderingContext2D;
         // @ts-ignore
         image.context = ctx;
         //console.log((rX * 16), (rY * 16))
         image.onload = (e) => {
             renderWall(e, image, 0, 0, 256, 16, 0, 0, 256, 16);
             // @ts-ignore
-            wallPatterns[asset] = image.context.getImageData(0,0,256,16);
-            resolve(true);
+            resolve(image.context.getImageData(0, 0, 256, 16));
         }
         //console.log(`Loading asset location ${x * 16}, ${y * 16}`);
         image.src = `assets/${asset}.png`;
@@ -266,7 +289,7 @@ function start(id: ImageData) {
     return new Promise((resolve) => {
         let output: HTMLCanvasElement = document.querySelector("#output") as HTMLCanvasElement;
         if (!output) return;
-        const ctx: CanvasRenderingContext2D = output.getContext("2d",{willReadFrequently: true}) as CanvasRenderingContext2D;
+        const ctx: CanvasRenderingContext2D = output.getContext("2d", { willReadFrequently: true }) as CanvasRenderingContext2D;
         const imgData = ctx.createImageData(columns, rows);
         // input, width, height, N, outputWidth, outputHeight, periodicInput, periodicOutput, symmetry, ground
         // @ts-expect-error
@@ -308,7 +331,7 @@ function delight(cell: HTMLElement) {
 
 function checkIfWall(x: number, y: number, max_x: number, max_y: number) {
     if (x === 0 || x >= max_x - 1) return true
-    else if(y === 0 || y >= max_y - 1) return true
+    else if (y === 0 || y >= max_y - 1) return true
     else if (cells[x][y].type === "wall") return true
     else return false;
 }

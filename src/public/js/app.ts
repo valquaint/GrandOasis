@@ -1,9 +1,11 @@
-let root:HTMLElement;
+let root: HTMLElement;
 let rows = 20;
 let columns = 20;
 let MAP;
+let PLAYER: Entity;
 async function ready() {
-    root = document.querySelector("#root")as HTMLElement;
+    root = document.querySelector("#root") as HTMLElement;
+    PLAYER = new Entity("Player", 10, 1, 1, 1);
     if (root) {
         for (let y = 0; y < rows; y++) {
             const row = document.createElement("div");
@@ -19,11 +21,11 @@ async function ready() {
             }
         }
     }
-
+    RegisterHotkeys();
 }
 
 async function clearMap() {
-    for(const ele of document.querySelectorAll(".row") as unknown as Array<any>){
+    for (const ele of document.querySelectorAll(".row") as unknown as Array<any>) {
         ele.remove();
     }
     if (root) {
@@ -50,6 +52,40 @@ async function Generate(map: string) {
     await MAP.testwfc();
 }
 
+async function RegisterHotkeys() {
+    document.addEventListener("keydown", handleMove);
+}
 
+function handleMove(event: KeyboardEvent) {
+    switch (event.key) {
+        case "w":
+        case "W":
+        case "ArrowUp":
+            event.preventDefault();
+            console.log("UP")
+            break;
+        case "a":
+        case "A":
+        case "ArrowLeft":
+            event.preventDefault();
+            console.log("LEFT")
+            break;
+        case "s":
+        case "S":
+        case "ArrowDown":
+            event.preventDefault();
+            console.log("DOWN")
+            break;
+
+        case "d":
+        case "D":
+        case "ArrowRight":
+            event.preventDefault();
+            console.log("RIGHT")
+            break;
+        default:
+            return true;
+    }
+}
 
 document.addEventListener("DOMContentLoaded", ready);

@@ -28,7 +28,7 @@ body {
 }
 
 .floor {
-    background-color: #c90;
+    background-color: rgb(0, 0, 0);
 }
 .wall {
     background-color: #3f3f3f;

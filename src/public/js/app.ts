@@ -193,7 +193,7 @@ function placeImage(x: number, y: number, type: string) {
             //console.log(part);
             //debugger
 
-            console.log(`Placing section at internal ${sX}, ${sY}, pX ${pX * 16}`)
+            console.log(`Placing section at internal ${sX}, ${sY}, pX ${pX}`)
             ctx.putImageData(wallPatterns[type], (sX * 16) - pX, (sY * 16), pX, 0, 16, 16)
             sections++;
             sX ++;
@@ -202,6 +202,13 @@ function placeImage(x: number, y: number, type: string) {
                 sX = 0;
             }
             //if(sections === 3) debugger
+        }
+        ctx.fillStyle ="#00000067";
+        console.log(`Checking cell [${x},${y+1}]`)
+        if(!checkIfWall(x,y+1,columns,rows)){
+            ctx.fillRect(0,0,64,40)
+        }else{
+            ctx.fillRect(0,0,64,64)
         }
         //ctx.putImageData(wallPatterns[type], 0, 0)
         //console.log(`Painted cell ${x}, ${y}`)
@@ -300,9 +307,10 @@ function delight(cell: HTMLElement) {
 }
 
 function checkIfWall(x: number, y: number, max_x: number, max_y: number) {
-    if (x === 0 || x === max_x - 1 || y === 0 || y === max_y - 1) return true
+    if (x === 0 || x >= max_x - 1) return true
+    else if(y === 0 || y >= max_y - 1) return true
     else if (cells[x][y].type === "wall") return true
-    return false;
+    else return false;
 }
 
 function createCell(x: number, y: number) {

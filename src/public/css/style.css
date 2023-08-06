@@ -1,0 +1,50 @@
+body {
+    display: flex;
+}
+.row {
+    display: flex;
+    flex-direction: row;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+    flex-basis: 100%;
+    flex: 1;
+}
+
+.column > * {
+    border: 2px solid black;
+    width: 64px;
+    aspect-ratio: 1 / 1;
+}
+
+.cell {
+    background-color: #000;
+}
+
+.visited {
+    border: 2px solid #0f0;
+}
+
+.floor {
+    background-color: #c90;
+}
+.wall {
+    background-color: #3f3f3f;
+}
+
+.edge  {
+    background-color: #3f3f3f;
+}
+
+.light {
+    background-color: #f00;
+}
+
+.wfc {
+    aspect-ratio: 1 / 1;
+    width: 200px;
+    height: 200px;
+    image-rendering: pixelated;
+}

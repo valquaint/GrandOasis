@@ -25,6 +25,8 @@ class Entity {
     }
     async Move(dir) {
         console.log(`Moving ${this.name} in direction ${dir.x}, ${dir.y}. They should be moving to ${this.x + dir.x}, ${this.y + dir.y}`);
+        const oldCell = MAP.getCell(this.x, this.y);
+        await oldCell.Exit(this);
         const cell = MAP.getCell(this.x + dir.x, this.y + dir.y);
         if (cell.type === "floor") {
             if (!cell.getContents.length) {

@@ -12,15 +12,17 @@ class GameMap {
     columns;
     rows;
     style;
+    DIRECTIONS;
     pixelTypes = {
         "0,0,0,255": "wall",
         "255,255,255,255": "floor",
         "255,0,0,255": this.markCellAsEither.bind(this)
     };
-    constructor(columns, rows, style) {
+    constructor(columns, rows, style, directions) {
         this.columns = columns;
         this.rows = rows;
         this.style = style;
+        this.DIRECTIONS = directions;
     }
     findPixel(image, x, y) {
         let start = y * image.width + x;
@@ -28,7 +30,22 @@ class GameMap {
         let data = image.data;
         return [data[index], data[index + 1], data[index + 2], data[index + 3]];
     }
-    async testwfc() {
+    async findOpenCell() {
+        let cells = [];
+        for (const columns of this.cells) {
+            for (const cell of columns) {
+                if (cell.type === "floor") {
+                    if (cell.getContents.length === 0) {
+                        cells.push(cell);
+                    }
+                }
+            }
+        }
+        cells = await this.shuffleArray(cells);
+        const pick = Math.floor(Math.random() * cells.length);
+        return [cells[pick].x, cells[pick].y];
+    }
+    async testwfc(callback) {
         const canva = document.createElement("canvas");
         canva.id = "baseImg";
         canva.width = 5;
@@ -67,9 +84,9 @@ class GameMap {
                 }
             }
         }
-        setTimeout(await this.processWFC.bind(this), 20);
+        setTimeout(await this.processWFC.bind(this, callback), 20);
     }
-    async processWFC() {
+    async processWFC(callback) {
         let totalCells = 0;
         let floors = (() => {
             let count = 0;
@@ -85,16 +102,18 @@ class GameMap {
         })();
         const ratio = floors / totalCells;
         if (ratio < .5)
-            await this.testwfc();
+            await this.testwfc(callback);
         else {
             console.log(`Floor ratio is ${floors / totalCells}`);
             if (!await this.validateSteps(floors)) {
                 document.querySelectorAll(".visited").forEach(ele => ele.classList.remove("visited"));
                 await this.processMaze(this.columns, this.rows);
-                await this.testwfc();
+                await this.testwfc(callback);
             }
-            else
+            else {
                 await this.drawWalls("walls_1");
+                await callback();
+            }
         }
     }
     validateSteps(count) {
@@ -115,6 +134,9 @@ class GameMap {
             }
             resolve(true);
         });
+    }
+    getCell(x, y) {
+        return this.cells[x][y];
     }
     async drawWalls(type) {
         await this.makeWalls(type);
@@ -365,25 +387,7 @@ class GameMap {
     }
     async checkCell(x, y, maxX, maxY) {
         this.markCellVisited(x, y, maxX, maxY);
-        let DIRECTIONS = [
-            {
-                x: 0,
-                y: -1
-            },
-            {
-                x: 0,
-                y: 1
-            },
-            {
-                x: -1,
-                y: 0
-            },
-            {
-                x: 1,
-                y: 0
-            },
-        ];
-        DIRECTIONS = await this.shuffleArray(DIRECTIONS);
+        let myDirections = await this.shuffleArray(this.DIRECTIONS);
         // @ts-ignore
         //document.querySelector(`.cell-${x}-${y}`).style.backgroundColor = "#0f0";
         //console.log("Direction Count:", directionCount, PATHLEN)
@@ -392,7 +396,7 @@ class GameMap {
         chooses random direction that is not same direction it came from
         */
         //console.log(previousDirection, DIRECTIONS)
-        for (const DIR of DIRECTIONS) {
+        for (const DIR of myDirections) {
             if (!this.checkIfNeighborIsVisited(x + DIR.x, y + DIR.y, maxX, maxY)) {
                 if (this.checkIfWall(x + DIR.x, y + DIR.y, maxX, maxY)) {
                 }

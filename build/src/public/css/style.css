@@ -75,3 +75,24 @@ body {
     object-fit: contain;
     image-rendering: pixelated;
 }
+
+.player {
+    width: 64px;
+    aspect-ratio: 1 / 1;
+    z-index: 3;
+    background-color: #f00;
+    display: block;
+    float: right;
+    position: absolute;
+}
+
+.enemy {
+    
+    width: 64px;
+    aspect-ratio: 1 / 1;
+    z-index: 3;
+    background-color: #ff0;
+    display: block;
+    float: right;
+    position: absolute;
+}

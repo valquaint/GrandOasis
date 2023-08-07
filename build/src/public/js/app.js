@@ -22,6 +22,24 @@ const DIRECTIONS = [
         y: 0
     },
 ];
+const moveDirections = [
+    {
+        x: 0,
+        y: -1
+    },
+    {
+        x: 0,
+        y: 1
+    },
+    {
+        x: -1,
+        y: 0
+    },
+    {
+        x: 1,
+        y: 0
+    },
+];
 async function ready() {
     root = document.querySelector("#root");
     if (root) {
@@ -69,8 +87,15 @@ async function Generate(map) {
 }
 async function placePlayer() {
     const start = await MAP.findOpenCell();
-    PLAYER = new Entity("Player", 10, 1, start[0], start[1]);
+    PLAYER = new Entity("Player", 10, 1, start[0], start[1], ["player"]);
     console.log(`Placing player to start at ${start[0]}, ${start[1]}`);
+    const startCell = MAP.getCell(start[0], start[1]);
+    await startCell.Enter(PLAYER);
+    const testEnemyLoc = await MAP.findOpenCell();
+    const testEnemy = new Entity("Enemy", 10, 1, start[0], start[1], ["enemy"]);
+    console.log(`Placing enemy to start at ${testEnemyLoc[0]}, ${testEnemyLoc[1]}`);
+    const enemyCell = MAP.getCell(testEnemyLoc[0], testEnemyLoc[1]);
+    await enemyCell.Enter(testEnemy);
 }
 async function RegisterHotkeys() {
     document.addEventListener("keydown", keyDown);
@@ -84,19 +109,19 @@ async function keyDown(event) {
             await move(0);
             console.log("UP");
             break;
-        case "a":
-        case "A":
-        case "ArrowLeft":
-            event.preventDefault();
-            await move(2);
-            console.log("LEFT");
-            break;
         case "s":
         case "S":
         case "ArrowDown":
             event.preventDefault();
             await move(1);
             console.log("DOWN");
+            break;
+        case "a":
+        case "A":
+        case "ArrowLeft":
+            event.preventDefault();
+            await move(2);
+            console.log("LEFT");
             break;
         case "d":
         case "D":
@@ -106,14 +131,15 @@ async function keyDown(event) {
             console.log("RIGHT");
             break;
         default:
+            console.log(event.key);
             return true;
     }
 }
 function move(direction) {
     return new Promise((resolve) => {
         if (PLAYER.canMove) {
-            console.log(DIRECTIONS[direction]);
-            PLAYER.Move(DIRECTIONS[direction]);
+            console.log(moveDirections[direction]);
+            PLAYER.Move(moveDirections[direction]);
             resolve(true);
         }
     });

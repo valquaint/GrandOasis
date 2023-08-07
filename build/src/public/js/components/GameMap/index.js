@@ -34,8 +34,11 @@ class GameMap {
         let cells = [];
         for (const columns of this.cells) {
             for (const cell of columns) {
-                if (cell.type === "floor")
-                    cells.push(cell);
+                if (cell.type === "floor") {
+                    if (cell.getContents.length === 0) {
+                        cells.push(cell);
+                    }
+                }
             }
         }
         cells = await this.shuffleArray(cells);
@@ -131,6 +134,9 @@ class GameMap {
             }
             resolve(true);
         });
+    }
+    getCell(x, y) {
+        return this.cells[x][y];
     }
     async drawWalls(type) {
         await this.makeWalls(type);

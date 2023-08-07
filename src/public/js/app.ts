@@ -1,10 +1,29 @@
 let root: HTMLElement;
 let rows = 12;
 let columns = 12;
-let MAP:GameMap;
+let MAP: GameMap;
 let PLAYER: Entity;
 type Direction = { x: number, y: number };
 const DIRECTIONS: Direction[] = [ // UP/DOWN/LEFT/RIGHT
+    {
+        x: 0,
+        y: -1
+    },
+    {
+        x: 0,
+        y: 1
+    },
+    {
+        x: -1,
+        y: 0
+    },
+    {
+        x: 1,
+        y: 0
+    },
+]
+
+const moveDirections: Direction[] = [ // UP/DOWN/LEFT/RIGHT
     {
         x: 0,
         y: -1
@@ -70,10 +89,17 @@ async function Generate(map: string) {
     await MAP.testwfc(placePlayer);
 }
 
-async function placePlayer(){
-    const start:number[] = await MAP.findOpenCell();
-    PLAYER = new Entity("Player", 10, 1, start[0], start[1]);
+async function placePlayer() {
+    const start: number[] = await MAP.findOpenCell();
+    PLAYER = new Entity("Player", 10, 1, start[0], start[1], ["player"]);
     console.log(`Placing player to start at ${start[0]}, ${start[1]}`)
+    const startCell = MAP.getCell(start[0], start[1]);
+    await startCell.Enter(PLAYER);
+    const testEnemyLoc: number[] = await MAP.findOpenCell();
+    const testEnemy =  new Entity("Enemy", 10, 1, start[0], start[1], ["enemy"]);
+    console.log(`Placing enemy to start at ${testEnemyLoc[0]}, ${testEnemyLoc[1]}`)
+    const enemyCell = MAP.getCell(testEnemyLoc[0], testEnemyLoc[1]);
+    await enemyCell.Enter(testEnemy);
 }
 
 async function RegisterHotkeys() {
@@ -90,13 +116,6 @@ async function keyDown(event: KeyboardEvent) {
             await move(0);
             console.log("UP")
             break;
-        case "a":
-        case "A":
-        case "ArrowLeft":
-            event.preventDefault();
-            await move(2);
-            console.log("LEFT")
-            break;
         case "s":
         case "S":
         case "ArrowDown":
@@ -104,7 +123,13 @@ async function keyDown(event: KeyboardEvent) {
             await move(1);
             console.log("DOWN")
             break;
-
+        case "a":
+        case "A":
+        case "ArrowLeft":
+            event.preventDefault();
+            await move(2);
+            console.log("LEFT")
+            break;
         case "d":
         case "D":
         case "ArrowRight":
@@ -113,6 +138,7 @@ async function keyDown(event: KeyboardEvent) {
             console.log("RIGHT")
             break;
         default:
+            console.log(event.key)
             return true;
     }
 }
@@ -120,8 +146,8 @@ async function keyDown(event: KeyboardEvent) {
 function move(direction: number) {
     return new Promise((resolve) => {
         if (PLAYER.canMove) {
-            console.log(DIRECTIONS[direction]);
-            PLAYER.Move(DIRECTIONS[direction]);
+            console.log(moveDirections[direction]);
+            PLAYER.Move(moveDirections[direction]);
             resolve(true)
         }
     })

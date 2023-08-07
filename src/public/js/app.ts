@@ -1,7 +1,7 @@
 let root: HTMLElement;
-let rows = 20;
-let columns = 20;
-let MAP;
+let rows = 12;
+let columns = 12;
+let MAP:GameMap;
 let PLAYER: Entity;
 type Direction = { x: number, y: number };
 const DIRECTIONS: Direction[] = [ // UP/DOWN/LEFT/RIGHT
@@ -24,7 +24,6 @@ const DIRECTIONS: Direction[] = [ // UP/DOWN/LEFT/RIGHT
 ]
 async function ready() {
     root = document.querySelector("#root") as HTMLElement;
-    PLAYER = new Entity("Player", 10, 1, 1, 1);
     if (root) {
         for (let y = 0; y < rows; y++) {
             const row = document.createElement("div");
@@ -68,7 +67,13 @@ async function Generate(map: string) {
     await clearMap();
     MAP = new GameMap(columns, rows, map, DIRECTIONS);
     await MAP.processMaze(columns, rows);
-    await MAP.testwfc();
+    await MAP.testwfc(placePlayer);
+}
+
+async function placePlayer(){
+    const start:number[] = await MAP.findOpenCell();
+    PLAYER = new Entity("Player", 10, 1, start[0], start[1]);
+    console.log(`Placing player to start at ${start[0]}, ${start[1]}`)
 }
 
 async function RegisterHotkeys() {

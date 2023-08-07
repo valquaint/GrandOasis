@@ -1,7 +1,7 @@
 "use strict";
 let root;
-let rows = 20;
-let columns = 20;
+let rows = 12;
+let columns = 12;
 let MAP;
 let PLAYER;
 const DIRECTIONS = [
@@ -24,7 +24,6 @@ const DIRECTIONS = [
 ];
 async function ready() {
     root = document.querySelector("#root");
-    PLAYER = new Entity("Player", 10, 1, 1, 1);
     if (root) {
         for (let y = 0; y < rows; y++) {
             const row = document.createElement("div");
@@ -66,7 +65,12 @@ async function Generate(map) {
     await clearMap();
     MAP = new GameMap(columns, rows, map, DIRECTIONS);
     await MAP.processMaze(columns, rows);
-    await MAP.testwfc();
+    await MAP.testwfc(placePlayer);
+}
+async function placePlayer() {
+    const start = await MAP.findOpenCell();
+    PLAYER = new Entity("Player", 10, 1, start[0], start[1]);
+    console.log(`Placing player to start at ${start[0]}, ${start[1]}`);
 }
 async function RegisterHotkeys() {
     document.addEventListener("keydown", keyDown);

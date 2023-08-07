@@ -1,4 +1,3 @@
-
 class GameMap {
     cells: any;
     lastDirection: any; // TODO: type this
@@ -33,7 +32,19 @@ findPixel(image: ImageData, x: number, y: number) {
     return [data[index], data[index + 1], data[index + 2], data[index + 3]]
 }
 
-public async testwfc() {
+public async findOpenCell(){
+    let cells:GridCell[] = [];
+    for(const columns of this.cells){
+        for(const cell of columns){
+            if(cell.type==="floor") cells.push(cell);
+        }
+    }
+    cells = await this.shuffleArray(cells)as Array<GridCell>;
+    const pick:number = Math.floor(Math.random() * cells.length);
+    return [cells[pick].x, cells[pick].y];
+}
+
+public async testwfc(callback:Function) {
     const canva = document.createElement("canvas");
     canva.id = "baseImg";
     canva.width = 5;
@@ -72,10 +83,10 @@ public async testwfc() {
             }
         }
     }
-    setTimeout(await this.processWFC.bind(this), 20);
+    setTimeout(await this.processWFC.bind(this, callback), 20);
 }
 
-async processWFC() {
+async processWFC(callback:Function) {
     let totalCells: number = 0;
     let floors: number = (() => {
         let count: number = 0;
@@ -90,16 +101,19 @@ async processWFC() {
         return count;
     })()
     const ratio = floors / totalCells;
-    if (ratio < .5) await this.testwfc();
+    if (ratio < .5) await this.testwfc(callback);
     else {
 
         console.log(`Floor ratio is ${floors / totalCells}`);
         if (!await this.validateSteps(floors)) {
             document.querySelectorAll(".visited").forEach(ele => ele.classList.remove("visited"))
             await this.processMaze(this.columns, this.rows);
-            await this.testwfc();
+            await this.testwfc(callback);
         }
-        else await this.drawWalls("walls_1");
+        else{
+            await this.drawWalls("walls_1");
+            await callback();
+        } 
     }
 }
 

@@ -59,6 +59,7 @@ async function ready() {
         }
     }
     RegisterHotkeys();
+    await Generate("cave");
 }
 
 async function clearMap() {

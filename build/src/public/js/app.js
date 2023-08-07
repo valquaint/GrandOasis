@@ -58,6 +58,7 @@ async function ready() {
         }
     }
     RegisterHotkeys();
+    await Generate("cave");
 }
 async function clearMap() {
     for (const ele of document.querySelectorAll(".row")) {

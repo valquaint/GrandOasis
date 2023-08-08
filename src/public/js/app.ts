@@ -4,6 +4,7 @@ let columns = 12;
 let MAP: GameMap;
 let PLAYER: Entity;
 type Direction = { x: number, y: number };
+let narrator:Narrator;
 const DIRECTIONS: Direction[] = [ // UP/DOWN/LEFT/RIGHT
     {
         x: 0,
@@ -43,6 +44,7 @@ const moveDirections: Direction[] = [ // UP/DOWN/LEFT/RIGHT
 ]
 async function ready() {
     root = document.querySelector("#root") as HTMLElement;
+    narrator = new Narrator();
     if (root) {
         for (let y = 0; y < rows; y++) {
             const row = document.createElement("div");
@@ -138,6 +140,17 @@ async function keyDown(event: KeyboardEvent) {
             await move(3);
             console.log("RIGHT")
             break;
+        case " ":
+        case "Enter":
+            event.preventDefault();
+            console.log("CONFIRM");
+            if(narrator.onScreen){
+                console.log("Closing Narrator");
+                narrator.clear();
+            }
+            break;
+        case "o":
+            await Narrate("You found the secret key!");
         default:
             console.log(event.key)
             return true;
@@ -146,13 +159,17 @@ async function keyDown(event: KeyboardEvent) {
 
 function move(direction: number) {
     return new Promise((resolve) => {
-        if (PLAYER.canMove) {
+        if (PLAYER.canMove && !narrator.onScreen) {
             console.log(moveDirections[direction]);
             PLAYER.Move(moveDirections[direction]);
             resolve(true)
         }
     })
 
+}
+
+async function Narrate(text:string){
+    narrator.explain(text, columns, rows);
 }
 
 document.addEventListener("DOMContentLoaded", ready);

@@ -4,6 +4,7 @@ let rows = 12;
 let columns = 12;
 let MAP;
 let PLAYER;
+let narrator;
 const DIRECTIONS = [
     {
         x: 0,
@@ -42,6 +43,7 @@ const moveDirections = [
 ];
 async function ready() {
     root = document.querySelector("#root");
+    narrator = new Narrator();
     if (root) {
         for (let y = 0; y < rows; y++) {
             const row = document.createElement("div");
@@ -131,6 +133,17 @@ async function keyDown(event) {
             await move(3);
             console.log("RIGHT");
             break;
+        case " ":
+        case "Enter":
+            event.preventDefault();
+            console.log("CONFIRM");
+            if (narrator.onScreen) {
+                console.log("Closing Narrator");
+                narrator.clear();
+            }
+            break;
+        case "o":
+            await Narrate("You found the secret key!");
         default:
             console.log(event.key);
             return true;
@@ -138,11 +151,14 @@ async function keyDown(event) {
 }
 function move(direction) {
     return new Promise((resolve) => {
-        if (PLAYER.canMove) {
+        if (PLAYER.canMove && !narrator.onScreen) {
             console.log(moveDirections[direction]);
             PLAYER.Move(moveDirections[direction]);
             resolve(true);
         }
     });
+}
+async function Narrate(text) {
+    narrator.explain(text, columns, rows);
 }
 document.addEventListener("DOMContentLoaded", ready);

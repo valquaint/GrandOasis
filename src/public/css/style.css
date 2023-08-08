@@ -47,6 +47,7 @@ body {
     width: 200px;
     height: 200px;
     image-rendering: pixelated;
+    display: none;
 }
 
 .tile{
@@ -63,7 +64,7 @@ body {
 }
 
 .demo {
-    display: flex;
+    display: none;
 }
 
 .demo > *{
@@ -95,4 +96,15 @@ body {
     display: block;
     float: right;
     position: absolute;
+}
+
+.narrator {
+    position: absolute;
+    height: 128px;
+    z-index: 20;
+    background: #000000;
+    border: 2px solid white;
+    color: white;
+    box-shadow: #000 2px 2px 0px 0px, #000 -2px 2px 0px 0px, #000 2px -2px 0px 0px, #000 -2px -2px 0px 0px;
+    padding: 8px;
 }

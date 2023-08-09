@@ -96,7 +96,14 @@ async function placePlayer() {
     const startCell = MAP.getCell(start[0], start[1]);
     await startCell.Enter(PLAYER);
     const testEnemyLoc = await MAP.findOpenCell();
-    Enemies.push(new Entity("Enemy", 10, 1, testEnemyLoc[0], testEnemyLoc[1], ["enemy"], async () => { await Narrate("Blargh! I am slain!"); }, PLAYER));
+    Enemies.push(new Entity("Enemy", 10, 1, testEnemyLoc[0], testEnemyLoc[1], ["enemy"], async () => {
+        await Narrate("Blargh! I am slain!");
+        document.querySelector(".enemy")?.remove();
+        const currCell = MAP.getCell(Enemies[0].x, Enemies[0].y);
+        await currCell.Exit(Enemies[0]);
+        delete Enemies[0];
+        Enemies.splice(0, 1);
+    }, PLAYER));
     console.log(`Placing enemy to start at ${testEnemyLoc[0]}, ${testEnemyLoc[1]}`);
     const enemyCell = MAP.getCell(testEnemyLoc[0], testEnemyLoc[1]);
     await enemyCell.Enter(Enemies[0]);

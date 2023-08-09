@@ -7,7 +7,8 @@ class Entity {
     y: number;
     movable: boolean = true;
     htmlElement: HTMLElement;
-    constructor(name: string, hp: number, damage: number, x: number, y: number, style: string[]) {
+    onDeath: Function;
+    constructor(name: string, hp: number, damage: number, x: number, y: number, style: string[], onDeath?:Function) {
         this.name = name;
         this.hp = hp;
         this.damage = damage;
@@ -15,13 +16,15 @@ class Entity {
         this.y = y;
         this.htmlElement = document.createElement("Entity");
         this.htmlElement.classList.add(...style)
+        if(onDeath!== undefined) this.onDeath = onDeath;
+        else this.onDeath = () => new Promise((resolve) => resolve(console.log("Rip anonymous")))
     }
 
     public async Bump(source: Entity) {
         source.hp -= this.damage;
         console.log(`${source.name} attacks ${this.name}`)
         if (source.hp <= 0) {
-            console.log(`I should call ${this.name}.death()`)
+            if(this.onDeath!== undefined) await this.onDeath()
         }
     }
 

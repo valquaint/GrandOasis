@@ -7,7 +7,8 @@ class Entity {
     y;
     movable = true;
     htmlElement;
-    constructor(name, hp, damage, x, y, style) {
+    onDeath;
+    constructor(name, hp, damage, x, y, style, onDeath) {
         this.name = name;
         this.hp = hp;
         this.damage = damage;
@@ -15,12 +16,17 @@ class Entity {
         this.y = y;
         this.htmlElement = document.createElement("Entity");
         this.htmlElement.classList.add(...style);
+        if (onDeath !== undefined)
+            this.onDeath = onDeath;
+        else
+            this.onDeath = () => new Promise((resolve) => resolve(console.log("Rip anonymous")));
     }
     async Bump(source) {
         source.hp -= this.damage;
         console.log(`${source.name} attacks ${this.name}`);
         if (source.hp <= 0) {
-            console.log(`I should call ${this.name}.death()`);
+            if (this.onDeath !== undefined)
+                await this.onDeath();
         }
     }
     async Move(dir) {

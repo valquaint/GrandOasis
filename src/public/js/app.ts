@@ -99,7 +99,7 @@ async function placePlayer() {
     const startCell = MAP.getCell(start[0], start[1]);
     await startCell.Enter(PLAYER);
     const testEnemyLoc: number[] = await MAP.findOpenCell();
-    const testEnemy =  new Entity("Enemy", 10, 1, start[0], start[1], ["enemy"]);
+    const testEnemy =  new Entity("Enemy", 10, 1, start[0], start[1], ["enemy"], async () => {await Narrate("Blargh! I am slain!")});
     console.log(`Placing enemy to start at ${testEnemyLoc[0]}, ${testEnemyLoc[1]}`)
     const enemyCell = MAP.getCell(testEnemyLoc[0], testEnemyLoc[1]);
     await enemyCell.Enter(testEnemy);

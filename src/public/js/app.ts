@@ -6,6 +6,7 @@ let PLAYER: Entity;
 let Enemies:Entity[] = new Array<Entity>
 type Direction = { x: number, y: number };
 let narrator: Narrator;
+let View:Viewport;
 const DIRECTIONS: Direction[] = [ // UP/DOWN/LEFT/RIGHT
     {
         x: 0,
@@ -45,6 +46,7 @@ const moveDirections: Direction[] = [ // UP/DOWN/LEFT/RIGHT
 ]
 async function ready() {
     root = document.querySelector("#root") as HTMLElement;
+    View = new Viewport(7,7,["viewport"])
     narrator = new Narrator();
     if (root) {
         for (let y = 0; y < rows; y++) {
@@ -98,6 +100,7 @@ async function Generate(map: string) {
 async function placePlayer() {
     const start: number[] = await MAP.findOpenCell();
     PLAYER = new Entity("Player", 10, 1, start[0], start[1], ["player"]);
+    View.update(PLAYER);
     console.log(`Placing player to start at ${start[0]}, ${start[1]}`)
     const startCell = MAP.getCell(start[0], start[1]);
     await startCell.Enter(PLAYER);
@@ -192,11 +195,11 @@ async function gamepadHandler(event: GamepadEvent, connected: boolean) {
                             narrator.clear();
                         }
                     }
-
                     if(didMove){
                         for(const Enemy of Enemies){
                             await Enemy.wander.call(Enemy);
                         }
+                        
                     }
                 }
             }
@@ -262,8 +265,9 @@ function move(direction: number):Promise<boolean> {
     return new Promise((resolve) => {
         if (PLAYER.canMove && !narrator.onScreen) {
             console.log(moveDirections[direction]);
-            PLAYER.Move(moveDirections[direction]);
+            PLAYER.Move(moveDirections[direction], View);
             console.log("Player has moved.")
+            
             resolve(true)
         }else{
             resolve(false)
@@ -273,7 +277,7 @@ function move(direction: number):Promise<boolean> {
 }
 
 async function Narrate(text: string) {
-    narrator.explain(text, columns, rows);
+    narrator.explain(text, 7, 7);
 }
 
 document.addEventListener("DOMContentLoaded", ready);

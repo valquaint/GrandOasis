@@ -36,7 +36,7 @@ class Entity {
         }
         return false;
     }
-    Move(dir) {
+    Move(dir, view) {
         return new Promise(async (resolve) => {
             console.log(`Moving ${this.name} in direction ${dir.x}, ${dir.y}. They should be moving to ${this.x + dir.x}, ${this.y + dir.y}`);
             const oldCell = MAP.getCell(this.x, this.y);
@@ -48,6 +48,8 @@ class Entity {
                     if (success) {
                         this.x += dir.x;
                         this.y += dir.y;
+                        if (view)
+                            view.update(this);
                     }
                     resolve(success);
                 }

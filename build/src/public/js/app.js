@@ -6,6 +6,7 @@ let MAP;
 let PLAYER;
 let Enemies = new Array;
 let narrator;
+let View;
 const DIRECTIONS = [
     {
         x: 0,
@@ -44,6 +45,7 @@ const moveDirections = [
 ];
 async function ready() {
     root = document.querySelector("#root");
+    View = new Viewport(7, 7, ["viewport"]);
     narrator = new Narrator();
     if (root) {
         for (let y = 0; y < rows; y++) {
@@ -92,6 +94,7 @@ async function Generate(map) {
 async function placePlayer() {
     const start = await MAP.findOpenCell();
     PLAYER = new Entity("Player", 10, 1, start[0], start[1], ["player"]);
+    View.update(PLAYER);
     console.log(`Placing player to start at ${start[0]}, ${start[1]}`);
     const startCell = MAP.getCell(start[0], start[1]);
     await startCell.Enter(PLAYER);
@@ -242,7 +245,7 @@ function move(direction) {
     return new Promise((resolve) => {
         if (PLAYER.canMove && !narrator.onScreen) {
             console.log(moveDirections[direction]);
-            PLAYER.Move(moveDirections[direction]);
+            PLAYER.Move(moveDirections[direction], View);
             console.log("Player has moved.");
             resolve(true);
         }
@@ -252,6 +255,6 @@ function move(direction) {
     });
 }
 async function Narrate(text) {
-    narrator.explain(text, columns, rows);
+    narrator.explain(text, 7, 7);
 }
 document.addEventListener("DOMContentLoaded", ready);

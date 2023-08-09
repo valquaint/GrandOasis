@@ -61,8 +61,9 @@ async function ready() {
             }
         }
     }
-    RegisterHotkeys();
     await Generate("cave");
+    
+    
 }
 
 async function clearMap() {
@@ -87,6 +88,7 @@ async function clearMap() {
 }
 
 async function Generate(map: string) {
+    // TODO: Loading screen overlay during generation
     await clearMap();
     MAP = new GameMap(columns, rows, map, DIRECTIONS);
     await MAP.processMaze(columns, rows);
@@ -111,10 +113,30 @@ async function placePlayer() {
     console.log(`Placing enemy to start at ${testEnemyLoc[0]}, ${testEnemyLoc[1]}`)
     const enemyCell = MAP.getCell(testEnemyLoc[0], testEnemyLoc[1]);
     await enemyCell.Enter(Enemies[0]);
+    RegisterHotkeys();
 }
 
 async function RegisterHotkeys() {
     document.addEventListener("keydown", keyDown);
+    window.addEventListener("gamepadconnected", (e) => {
+        console.log(
+            "Gamepad connected at index %d: %s. %d buttons, %d axes.",
+            e.gamepad.index,
+            e.gamepad.id,
+            e.gamepad.buttons.length,
+            e.gamepad.axes.length,
+        );
+        gamepadHandler(e, true)
+    });
+    
+    window.addEventListener("gamepaddisconnected", (e) => {
+        console.log(
+            "Gamepad disconnected from index %d: %s",
+            e.gamepad.index,
+            e.gamepad.id,
+        );
+        gamepadHandler(e, false)
+    });
 }
 
 async function gamepadHandler(event: GamepadEvent, connected: boolean) {
@@ -146,20 +168,21 @@ async function gamepadHandler(event: GamepadEvent, connected: boolean) {
                     Axis 2: LSTICK U-/D+ ${controller.axes[1].toFixed(4)}
                     Axis 3: RSTICK L-/R+ ${controller.axes[2].toFixed(4)}
                     Axis 4: RSTICK U-/D+ ${controller.axes[3].toFixed(4)}`)
+                    let didMove:boolean = false;
                     if (controller.buttons[12].pressed) {
-                        await move(0);
+                        didMove = await move(0);
                         console.log("UP")
                     }
                     if (controller.buttons[13].pressed) {
-                        await move(1);
+                        didMove = await move(1);
                         console.log("DOWN")
                     }
                     if (controller.buttons[14].pressed) {
-                        await move(2);
+                        didMove = await move(2);
                         console.log("LEFT")
                     }
                     if (controller.buttons[15].pressed) {
-                        await move(3);
+                        didMove = await move(3);
                         console.log("RIGHT")
                     }
                     if (controller.buttons[0].pressed) {
@@ -167,6 +190,12 @@ async function gamepadHandler(event: GamepadEvent, connected: boolean) {
                         if (narrator.onScreen) {
                             console.log("Closing Narrator");
                             narrator.clear();
+                        }
+                    }
+
+                    if(didMove){
+                        for(const Enemy of Enemies){
+                            await Enemy.wander.call(Enemy);
                         }
                     }
                 }
@@ -248,22 +277,3 @@ async function Narrate(text: string) {
 }
 
 document.addEventListener("DOMContentLoaded", ready);
-window.addEventListener("gamepadconnected", (e) => {
-    console.log(
-        "Gamepad connected at index %d: %s. %d buttons, %d axes.",
-        e.gamepad.index,
-        e.gamepad.id,
-        e.gamepad.buttons.length,
-        e.gamepad.axes.length,
-    );
-    gamepadHandler(e, true)
-});
-
-window.addEventListener("gamepaddisconnected", (e) => {
-    console.log(
-        "Gamepad disconnected from index %d: %s",
-        e.gamepad.index,
-        e.gamepad.id,
-    );
-    gamepadHandler(e, false)
-});

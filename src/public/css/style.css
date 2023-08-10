@@ -272,3 +272,49 @@ progress::-webkit-progress-bar {
 .bat {
     background: url("../assets/enemies/bat/down.gif");
 }
+
+#loading {
+    position: absolute;
+    width: 448px;
+    height: 448px;
+    background-color: #000000b0;
+    float: left;
+    top: 0px;
+    left: 0px;
+    z-index: 99;
+    color: white;
+    padding:0;
+    margin:0;
+}
+
+#loading .loadinggear {
+    background: url("../assets/loading.png") no-repeat;
+    background-size: 258px 258px;
+    animation: rotate infinite 2s linear;
+    position: absolute;
+    width: 256px;
+    height: 256px;
+    aspect-ratio: 1 / 1;
+    top: calc(50% - 128px);
+    left: calc(50% - 128px);
+    float: left;
+    image-rendering: pixelated;
+}
+
+#loading .loadingtext {
+    position: absolute;
+    top: calc(50% + 64px);
+    left: calc(50% + 32px);
+    font-size: 32px;
+    text-shadow: #000 1px 1px 0px, #000 -1px 1px 0px, #000 1px -1px 0px, #000 -1px -1px 0px;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+@keyframes rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+    100%{
+        transform: rotate(360deg);
+    }
+}

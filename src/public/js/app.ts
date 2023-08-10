@@ -1,19 +1,22 @@
 let root: HTMLElement;
-let rows = 12;
-let columns = 12;
+let loading: HTMLElement;
+let rows = 10;
+let columns = 10;
 let MAP: GameMap;
 let PLAYER: Entity;
-let Enemies:Entity[] = new Array<Entity>
-type Direction = { x: number, y: number, name?:string};
+let Enemies: Entity[] = new Array<Entity>
+type Direction = { x: number, y: number, name?: string };
 let narrator: Narrator;
-let View:Viewport;
-let StatPanel:Statpanel;
-let ScorePanel:Statitem;
-let Score:number = 0;
-let Health:Statitem;
-let ItemPanel:Statitem;
-let FloorPanel:Statitem;
-let DamagePanel:Statitem;
+let View: Viewport;
+let StatPanel: Statpanel;
+let ScorePanel: Statitem;
+let Score: number = 0;
+let Health: Statitem;
+let Floor: number = 0;
+let ItemPanel: Statitem;
+let FloorPanel: Statitem;
+let DamagePanel: Statitem;
+let FloorTypes: string[] = ["cave", "forest", "forest2"];
 const DIRECTIONS: Direction[] = [ // UP/DOWN/LEFT/RIGHT
     {
         x: 0,
@@ -37,41 +40,35 @@ const moveDirections: Direction[] = [ // UP/DOWN/LEFT/RIGHT
     {
         x: 0,
         y: -1,
-        name:"up"
+        name: "up"
     },
     {
         x: 0,
         y: 1,
-        name:"down"
+        name: "down"
     },
     {
         x: -1,
         y: 0,
-        name:"left"
+        name: "left"
     },
     {
         x: 1,
         y: 0,
-        name:"right"
+        name: "right"
     },
 ]
 async function ready() {
     root = document.querySelector("#root") as HTMLElement;
-    View = new Viewport(7,7,["viewport"])
+    loading = document.querySelector("#loading") as HTMLElement;
+    View = new Viewport(7, 7, ["viewport"])
     narrator = new Narrator();
     StatPanel = new Statpanel(7, 1);
-    ScorePanel = new Statitem("score", 0.5,0,4,"counter",{"image":"counter","icon":"score"});
-    Health = new Statitem("health", 1,0,3,"meter",{"image":"counter", "icon":"health"});
-    ItemPanel = new Statitem("item", 1,0,1,"image",{"image":"item"});
-    DamagePanel = new Statitem("damagecounter", 1,0,1,"image",{"image":"power"});
-    FloorPanel = new Statitem("floorcounter",1,0,1,"image",{"image":"floor"}) 
-    StatPanel.element.appendChild(ScorePanel.element);
-    StatPanel.element.appendChild(Health.element);
-    StatPanel.element.appendChild(ItemPanel.element);
-    StatPanel.element.appendChild(DamagePanel.element);
-    StatPanel.element.appendChild(FloorPanel.element);
-    FloorPanel.update(1);
-    ScorePanel.update(Score);
+    ScorePanel = new Statitem("score", 0.5, 0, 4, "counter", { "image": "counter", "icon": "score" });
+    Health = new Statitem("health", 1, 0, 3, "meter", { "image": "counter", "icon": "health" });
+    ItemPanel = new Statitem("item", 1, 0, 1, "image", { "image": "item" });
+    DamagePanel = new Statitem("damagecounter", 1, 0, 1, "image", { "image": "power" });
+    FloorPanel = new Statitem("floorcounter", 1, 0, 1, "image", { "image": "floor" })
     if (root) {
         for (let y = 0; y < rows; y++) {
             const row = document.createElement("div");
@@ -87,9 +84,28 @@ async function ready() {
             }
         }
     }
-    await Generate("cave");
-    
-    
+    await GameLoop();
+}
+
+async function GameLoop() {
+    if (Floor < 100) {
+        loading.style.display = "block";
+        const pick = Math.floor(Math.random() * FloorTypes.length);
+        console.log(`Random map number: ${pick}`)
+        const mapgen = FloorTypes[pick];
+        Floor++;
+        rows = 10 + Math.floor((Floor / 100) * 10);
+        columns = 10 + Math.floor((Floor / 100) * 10);
+        console.log(`I will generate a ${columns} x ${rows} ${mapgen} map`)
+        await Generate(mapgen);
+        StatPanel.element.appendChild(ScorePanel.element);
+        StatPanel.element.appendChild(Health.element);
+        StatPanel.element.appendChild(ItemPanel.element);
+        StatPanel.element.appendChild(DamagePanel.element);
+        StatPanel.element.appendChild(FloorPanel.element);
+        FloorPanel.update(Floor);
+        ScorePanel.update(Score);
+    }
 }
 
 async function clearMap() {
@@ -123,7 +139,7 @@ async function Generate(map: string) {
 
 async function placePlayer() {
     const start: number[] = await MAP.findOpenCell();
-    PLAYER = new Entity("Player", [10,10], 1, start[0], start[1], ["player"]);
+    PLAYER = new Entity("Player", [10, 10], 1, start[0], start[1], ["player"]);
     View.update(PLAYER);
     DamagePanel.update(PLAYER.damage);
     console.log(`Placing player to start at ${start[0]}, ${start[1]}`)
@@ -138,13 +154,15 @@ async function placePlayer() {
         Score += Enemies[0].scoreValue;
         ScorePanel.update(Score);
         delete Enemies[0];
-        Enemies.splice(0,1);
+        Enemies.splice(0, 1);
+        GameLoop();
     }, PLAYER));
     console.log(`Placing enemy to start at ${testEnemyLoc[0]}, ${testEnemyLoc[1]}`)
     const enemyCell = MAP.getCell(testEnemyLoc[0], testEnemyLoc[1]);
     await enemyCell.Enter(Enemies[0]);
     RegisterHotkeys();
     Health.update(100 * Math.floor(PLAYER.hp / PLAYER.hp_max))
+    loading.style.display = "none";
 }
 
 async function RegisterHotkeys() {
@@ -159,7 +177,7 @@ async function RegisterHotkeys() {
         );
         gamepadHandler(e, true)
     });
-    
+
     window.addEventListener("gamepaddisconnected", (e) => {
         console.log(
             "Gamepad disconnected from index %d: %s",
@@ -199,7 +217,7 @@ async function gamepadHandler(event: GamepadEvent, connected: boolean) {
                     Axis 2: LSTICK U-/D+ ${controller.axes[1].toFixed(4)}
                     Axis 3: RSTICK L-/R+ ${controller.axes[2].toFixed(4)}
                     Axis 4: RSTICK U-/D+ ${controller.axes[3].toFixed(4)}`)
-                    let didMove:boolean = false;
+                    let didMove: boolean = false;
                     if (controller.buttons[12].pressed) {
                         didMove = await move(0);
                         console.log("UP")
@@ -223,12 +241,12 @@ async function gamepadHandler(event: GamepadEvent, connected: boolean) {
                             narrator.clear();
                         }
                     }
-                    if(didMove){
-                        for(const Enemy of Enemies){
+                    if (didMove) {
+                        for (const Enemy of Enemies) {
                             await Enemy.wander.call(Enemy);
                             Health.update(Math.floor(100 * (PLAYER.hp / PLAYER.hp_max)))
                         }
-                        
+
                     }
                 }
             }
@@ -238,7 +256,7 @@ async function gamepadHandler(event: GamepadEvent, connected: boolean) {
     }
 }
 async function keyDown(event: KeyboardEvent) {
-    let didMove:boolean = false;
+    let didMove: boolean = false;
     switch (event.key) {
         case "w":
         case "W":
@@ -283,24 +301,24 @@ async function keyDown(event: KeyboardEvent) {
             console.log(event.key)
             break;
     }
-    if(didMove){
-        for(const Enemy of Enemies){
+    if (didMove) {
+        for (const Enemy of Enemies) {
             await Enemy.wander.call(Enemy);
             Health.update(Math.floor(100 * (PLAYER.hp / PLAYER.hp_max)))
         }
     }
 }
 
-function move(direction: number):Promise<boolean> {
+function move(direction: number): Promise<boolean> {
     return new Promise((resolve) => {
         Health.update(Math.floor(100 * (PLAYER.hp / PLAYER.hp_max)))
         if (PLAYER.canMove && !narrator.onScreen) {
             console.log(moveDirections[direction]);
             PLAYER.Move(moveDirections[direction], View);
             console.log("Player has moved.")
-            
+
             resolve(true)
-        }else{
+        } else {
             resolve(false)
         }
     })

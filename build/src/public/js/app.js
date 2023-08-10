@@ -1,7 +1,8 @@
 "use strict";
 let root;
-let rows = 12;
-let columns = 12;
+let loading;
+let rows = 10;
+let columns = 10;
 let MAP;
 let PLAYER;
 let Enemies = new Array;
@@ -11,9 +12,11 @@ let StatPanel;
 let ScorePanel;
 let Score = 0;
 let Health;
+let Floor = 0;
 let ItemPanel;
 let FloorPanel;
 let DamagePanel;
+let FloorTypes = ["cave", "forest", "forest2"];
 const DIRECTIONS = [
     {
         x: 0,
@@ -56,6 +59,7 @@ const moveDirections = [
 ];
 async function ready() {
     root = document.querySelector("#root");
+    loading = document.querySelector("#loading");
     View = new Viewport(7, 7, ["viewport"]);
     narrator = new Narrator();
     StatPanel = new Statpanel(7, 1);
@@ -64,13 +68,6 @@ async function ready() {
     ItemPanel = new Statitem("item", 1, 0, 1, "image", { "image": "item" });
     DamagePanel = new Statitem("damagecounter", 1, 0, 1, "image", { "image": "power" });
     FloorPanel = new Statitem("floorcounter", 1, 0, 1, "image", { "image": "floor" });
-    StatPanel.element.appendChild(ScorePanel.element);
-    StatPanel.element.appendChild(Health.element);
-    StatPanel.element.appendChild(ItemPanel.element);
-    StatPanel.element.appendChild(DamagePanel.element);
-    StatPanel.element.appendChild(FloorPanel.element);
-    FloorPanel.update(1);
-    ScorePanel.update(Score);
     if (root) {
         for (let y = 0; y < rows; y++) {
             const row = document.createElement("div");
@@ -86,7 +83,27 @@ async function ready() {
             }
         }
     }
-    await Generate("cave");
+    await GameLoop();
+}
+async function GameLoop() {
+    if (Floor < 100) {
+        loading.style.display = "block";
+        const pick = Math.floor(Math.random() * FloorTypes.length);
+        console.log(`Random map number: ${pick}`);
+        const mapgen = FloorTypes[pick];
+        Floor++;
+        rows = 10 + Math.floor((Floor / 100) * 10);
+        columns = 10 + Math.floor((Floor / 100) * 10);
+        console.log(`I will generate a ${columns} x ${rows} ${mapgen} map`);
+        await Generate(mapgen);
+        StatPanel.element.appendChild(ScorePanel.element);
+        StatPanel.element.appendChild(Health.element);
+        StatPanel.element.appendChild(ItemPanel.element);
+        StatPanel.element.appendChild(DamagePanel.element);
+        StatPanel.element.appendChild(FloorPanel.element);
+        FloorPanel.update(Floor);
+        ScorePanel.update(Score);
+    }
 }
 async function clearMap() {
     for (const ele of document.querySelectorAll(".row")) {
@@ -133,12 +150,14 @@ async function placePlayer() {
         ScorePanel.update(Score);
         delete Enemies[0];
         Enemies.splice(0, 1);
+        GameLoop();
     }, PLAYER));
     console.log(`Placing enemy to start at ${testEnemyLoc[0]}, ${testEnemyLoc[1]}`);
     const enemyCell = MAP.getCell(testEnemyLoc[0], testEnemyLoc[1]);
     await enemyCell.Enter(Enemies[0]);
     RegisterHotkeys();
     Health.update(100 * Math.floor(PLAYER.hp / PLAYER.hp_max));
+    loading.style.display = "none";
 }
 async function RegisterHotkeys() {
     document.addEventListener("keydown", keyDown);

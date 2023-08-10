@@ -13,6 +13,7 @@ let Score = 0;
 let Health;
 let ItemPanel;
 let FloorPanel;
+let DamagePanel;
 const DIRECTIONS = [
     {
         x: 0,
@@ -61,10 +62,12 @@ async function ready() {
     ScorePanel = new Statitem("score", 0.5, 0, 4, "counter", { "image": "counter", "icon": "score" });
     Health = new Statitem("health", 1, 0, 3, "meter", { "image": "counter", "icon": "health" });
     ItemPanel = new Statitem("item", 1, 0, 1, "image", { "image": "item" });
-    FloorPanel = new Statitem("floorcounter", 1, 0, 1, "counter", {});
+    DamagePanel = new Statitem("damagecounter", 1, 0, 1, "image", { "image": "power" });
+    FloorPanel = new Statitem("floorcounter", 1, 0, 1, "image", { "image": "floor" });
     StatPanel.element.appendChild(ScorePanel.element);
     StatPanel.element.appendChild(Health.element);
     StatPanel.element.appendChild(ItemPanel.element);
+    StatPanel.element.appendChild(DamagePanel.element);
     StatPanel.element.appendChild(FloorPanel.element);
     FloorPanel.update(1);
     ScorePanel.update(Score);
@@ -116,6 +119,7 @@ async function placePlayer() {
     const start = await MAP.findOpenCell();
     PLAYER = new Entity("Player", [10, 10], 1, start[0], start[1], ["player"]);
     View.update(PLAYER);
+    DamagePanel.update(PLAYER.damage);
     console.log(`Placing player to start at ${start[0]}, ${start[1]}`);
     const startCell = MAP.getCell(start[0], start[1]);
     await startCell.Enter(PLAYER);

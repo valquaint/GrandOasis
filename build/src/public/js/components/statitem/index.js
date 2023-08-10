@@ -11,7 +11,6 @@ class Statitem {
     constructor(name, x, y, width, type, options) {
         this.element = document.createElement("stat");
         this.width = width * 32;
-        this.element.style.width = `${this.width}px`;
         this.x = x * 64;
         this.y = y * 64;
         this.element.style.top = `${this.y}px`;
@@ -69,9 +68,23 @@ class Statitem {
                 this.child.setAttribute("value", value.toString());
                 break;
             case "image":
-                const img = new Image();
-                img.src = `assets/${value}.png`;
-                this.counter = img;
+                switch (typeof value) {
+                    case "string":
+                        const img = new Image();
+                        img.src = `assets/${value}.png`;
+                        this.counter = img;
+                        break;
+                    case "number":
+                        if (!this.counter || this.counter.tagName.toLowerCase() === "img") {
+                            if (this.counter)
+                                this.child.removeChild(this.counter);
+                            this.counter = document.createElement("span");
+                            this.counter.classList.add("value");
+                            this.element.prepend(this.counter);
+                        }
+                        this.counter.innerHTML = value.toString();
+                        break;
+                }
                 break;
         }
     }

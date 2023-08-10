@@ -189,18 +189,25 @@ stat .item.image {
     margin: 2px;
 }
 
-.floorcounter.counter span{
+stat .damagecounter.image {
+    object-fit: contain;
+    width: 32px;
+    margin: 2px;
+}
+
+span.value {
     display: block;
-    font-size: 18px;
-    float: right;
-    position: relative;
-    width: 26px;
-    height: 26px;
-    color: white;
-    margin: 4px 4px 0px 4px;
-    top: 0px;
-    border: 1px solid white;
+    position: absolute;
+    width: 28px;
+    height: 32px;
     text-align: center;
+    padding: 10px 4px;
+}
+
+stat .floorcounter.image {
+    object-fit: contain;
+    width: 32px;
+    margin: 2px;
 }
 
 stat .counter.score {
@@ -208,7 +215,7 @@ stat .counter.score {
     border: 1px solid white;
     display: block;
     height: 26px;
-    margin: 4px 34px 0px 16px ;
+    margin: 4px 34px 0px 40px ;
     top: 0px;
 }
 

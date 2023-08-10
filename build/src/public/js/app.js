@@ -6,6 +6,12 @@ let MAP;
 let PLAYER;
 let Enemies = new Array;
 let narrator;
+let View;
+let StatPanel;
+let ScorePanel;
+let Health;
+let ItemPanel;
+let FloorPanel;
 const DIRECTIONS = [
     {
         x: 0,
@@ -44,7 +50,19 @@ const moveDirections = [
 ];
 async function ready() {
     root = document.querySelector("#root");
+    View = new Viewport(7, 7, ["viewport"]);
     narrator = new Narrator();
+    StatPanel = new Statpanel(7, 1);
+    ScorePanel = new Statitem("score", 0.5, 0, 4, "counter", { "image": "counter", "icon": "score" });
+    Health = new Statitem("health", 1, 0, 3, "meter", { "image": "counter", "icon": "health" });
+    ItemPanel = new Statitem("item", 1, 0, 1, "image", { "image": "item" });
+    FloorPanel = new Statitem("floorcounter", 1, 0, 1, "counter", {});
+    StatPanel.element.appendChild(ScorePanel.element);
+    StatPanel.element.appendChild(Health.element);
+    StatPanel.element.appendChild(ItemPanel.element);
+    StatPanel.element.appendChild(FloorPanel.element);
+    FloorPanel.update(1);
+    ScorePanel.update(0);
     if (root) {
         for (let y = 0; y < rows; y++) {
             const row = document.createElement("div");
@@ -91,7 +109,8 @@ async function Generate(map) {
 }
 async function placePlayer() {
     const start = await MAP.findOpenCell();
-    PLAYER = new Entity("Player", 10, 1, start[0], start[1], ["player"]);
+    PLAYER = new Entity("Player", [10, 10], 1, start[0], start[1], ["player"]);
+    View.update(PLAYER);
     console.log(`Placing player to start at ${start[0]}, ${start[1]}`);
     const startCell = MAP.getCell(start[0], start[1]);
     await startCell.Enter(PLAYER);
@@ -108,6 +127,7 @@ async function placePlayer() {
     const enemyCell = MAP.getCell(testEnemyLoc[0], testEnemyLoc[1]);
     await enemyCell.Enter(Enemies[0]);
     RegisterHotkeys();
+    Health.update(100 * Math.floor(PLAYER.hp / PLAYER.hp_max));
 }
 async function RegisterHotkeys() {
     document.addEventListener("keydown", keyDown);
@@ -176,6 +196,7 @@ async function gamepadHandler(event, connected) {
                     if (didMove) {
                         for (const Enemy of Enemies) {
                             await Enemy.wander.call(Enemy);
+                            Health.update(Math.floor(100 * (PLAYER.hp / PLAYER.hp_max)));
                         }
                     }
                 }
@@ -235,14 +256,16 @@ async function keyDown(event) {
     if (didMove) {
         for (const Enemy of Enemies) {
             await Enemy.wander.call(Enemy);
+            Health.update(Math.floor(100 * (PLAYER.hp / PLAYER.hp_max)));
         }
     }
 }
 function move(direction) {
     return new Promise((resolve) => {
+        Health.update(Math.floor(100 * (PLAYER.hp / PLAYER.hp_max)));
         if (PLAYER.canMove && !narrator.onScreen) {
             console.log(moveDirections[direction]);
-            PLAYER.Move(moveDirections[direction]);
+            PLAYER.Move(moveDirections[direction], View);
             console.log("Player has moved.");
             resolve(true);
         }
@@ -252,6 +275,6 @@ function move(direction) {
     });
 }
 async function Narrate(text) {
-    narrator.explain(text, columns, rows);
+    narrator.explain(text, 7, 7);
 }
 document.addEventListener("DOMContentLoaded", ready);

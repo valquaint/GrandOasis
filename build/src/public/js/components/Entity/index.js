@@ -2,6 +2,7 @@
 class Entity {
     name;
     hp;
+    hp_max = 0;
     damage;
     x;
     y;
@@ -11,7 +12,12 @@ class Entity {
     movePattern = "none";
     constructor(name, hp, damage, x, y, style, onDeath, movePattern) {
         this.name = name;
-        this.hp = hp;
+        if (typeof hp !== "number") {
+            this.hp = hp[0];
+            this.hp_max = hp[1];
+        }
+        else
+            this.hp = hp;
         this.damage = damage;
         this.x = x;
         this.y = y;
@@ -36,7 +42,7 @@ class Entity {
         }
         return false;
     }
-    Move(dir) {
+    Move(dir, view) {
         return new Promise(async (resolve) => {
             console.log(`Moving ${this.name} in direction ${dir.x}, ${dir.y}. They should be moving to ${this.x + dir.x}, ${this.y + dir.y}`);
             const oldCell = MAP.getCell(this.x, this.y);
@@ -48,6 +54,8 @@ class Entity {
                     if (success) {
                         this.x += dir.x;
                         this.y += dir.y;
+                        if (view)
+                            view.update(this);
                     }
                     resolve(success);
                 }

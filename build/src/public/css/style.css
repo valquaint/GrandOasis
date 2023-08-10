@@ -1,6 +1,27 @@
 body {
-    display: flex;
+    margin: 0px;
+    object-fit: contain;
+    aspect-ratio: 1 / 1;
 }
+
+#hud {
+    position: absolute;
+    float: right;
+    z-index: 20;
+    display: inline;
+    top: 0px;
+    left: 0px;
+}
+
+#output {
+    display: none;
+}
+
+viewport {
+    display: flex;
+    overflow: hidden;
+}
+
 .row {
     display: flex;
     flex-direction: row;
@@ -13,7 +34,7 @@ body {
     flex: 1;
 }
 
-.column > * {
+.column>* {
     /* border: 2px solid black; */
     width: 64px;
     aspect-ratio: 1 / 1;
@@ -30,11 +51,12 @@ body {
 .floor {
     background-color: rgb(0, 0, 0);
 }
+
 .wall {
     background-color: #3f3f3f;
 }
 
-.edge  {
+.edge {
     background-color: #3f3f3f;
 }
 
@@ -50,7 +72,7 @@ body {
     display: none;
 }
 
-.tile{
+.tile {
     width: 64px;
     height: 64px;
     z-index: 2;
@@ -67,7 +89,7 @@ body {
     display: none;
 }
 
-.demo > *{
+.demo>* {
     width: 16px;
     height: 16px;
     z-index: 2;
@@ -75,6 +97,7 @@ body {
     margin: 0px 0px;
     object-fit: contain;
     image-rendering: pixelated;
+    display: none;
 }
 
 .player {
@@ -83,19 +106,123 @@ body {
     z-index: 3;
     background-color: #f00;
     display: block;
-    float: right;
-    position: absolute;
+    float: inherit;
+    position: relative;
 }
 
 .enemy {
-    
+
     width: 64px;
     aspect-ratio: 1 / 1;
     z-index: 3;
     background-color: #ff0;
     display: block;
-    float: right;
+    float: inherit;
+    position: relative;
+}
+
+.statpanel {
     position: absolute;
+    background: #000000;
+    border: 2px solid white;
+    box-shadow: #000 2px 2px 0px 0px, #000 -2px 2px 0px 0px, #000 2px -2px 0px 0px, #000 -2px -2px 0px 0px;
+    color: white;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+
+stat {
+    display: block;
+    position: relative;
+    z-index: 22;
+    height: 32px;
+    color: white;
+    margin: 4px 0px 0px 0px;
+}
+
+.counter {
+    height: 32px;
+    object-fit: cover;
+}
+
+.counter.score .icon{
+    float: left;
+    position: relative;
+    left: -32px;
+}
+
+progress {
+    appearance: none;
+    -webkit-appearance: none;
+    border: 1px solid white;
+    margin: 4px 0px 0px 0px;
+    height: 28px;
+    display: block;
+    width: 128px;
+}
+.health .icon {
+    float: left;
+    left: -32px;
+    position: relative;
+    margin: 2px 0px;
+}
+stat .item.image {
+    object-fit: contain;
+    width: 32px;
+    margin: 2px;
+}
+
+.floorcounter.counter span{
+    display: block;
+    font-size: 18px;
+    float: right;
+    position: relative;
+    width: 26px;
+    height: 26px;
+    color: white;
+    margin: 4px 4px 0px 4px;
+    top: 0px;
+    border: 1px solid white;
+    text-align: center;
+}
+
+stat .counter.score {
+    width: 96px;
+    border: 1px solid white;
+    display: block;
+    height: 26px;
+    margin: 4px 34px 0px 16px ;
+    top: 0px;
+}
+
+.counter.score span{
+    width: 100%;
+    display: block;
+    height: 100%;
+    text-align: right;
+    font-size: 18px;
+    float: right;
+    position: relative;
+    top: -22px;
+}
+
+.counter.score .icon {
+    margin: -4px 0px;
+}
+
+
+.health::-webkit-progress-value {
+    background: url("../assets/block.png") repeat-x;
+    background-size: contain;
+}
+
+progress::-webkit-progress-bar {
+    background-color: #000;
+    border-radius: 2px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;
 }
 
 .narrator {
@@ -107,4 +234,14 @@ body {
     color: white;
     box-shadow: #000 2px 2px 0px 0px, #000 -2px 2px 0px 0px, #000 2px -2px 0px 0px, #000 -2px -2px 0px 0px;
     padding: 8px;
+}
+
+@media screen and (orientation:landscape) {
+    body {
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-content: space-between;
+    }
 }

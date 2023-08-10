@@ -270,7 +270,7 @@ class GameMap {
             // @ts-expect-error
             const model = new OverlappingModel(id.data, id.width, id.height, 2, this.columns, this.rows, true, false, 5, 0);
             //seed, limit
-            var success = model.generate(Math.random, 0);
+            let success = model.generate(Math.random, 0);
             model.graphics(imgData.data);
             ctx.putImageData(imgData, 0, 0);
             ctx.fillRect(0, 0, 1, this.rows);

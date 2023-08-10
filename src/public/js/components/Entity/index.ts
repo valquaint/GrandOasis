@@ -2,6 +2,7 @@
 class Entity {
     name: string;
     hp: number;
+    hp_max: number = 0;
     damage: number;
     x: number;
     y: number;
@@ -9,9 +10,13 @@ class Entity {
     htmlElement: HTMLElement;
     onDeath: Function;
     movePattern: Entity | string = "none";
-    constructor(name: string, hp: number, damage: number, x: number, y: number, style: string[], onDeath?: Function, movePattern?: Entity | string) {
+    constructor(name: string, hp: number|number[], damage: number, x: number, y: number, style: string[], onDeath?: Function, movePattern?: Entity | string) {
         this.name = name;
-        this.hp = hp;
+        if(typeof hp !== "number") {
+            this.hp = hp[0];
+            this.hp_max = hp[1];
+        }
+        else this.hp = hp;
         this.damage = damage;
         this.x = x;
         this.y = y;

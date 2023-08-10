@@ -11,7 +11,7 @@ class Statitem {
     type: "counter" | "meter" | "image";
     child: HTMLElement | HTMLProgressElement | HTMLImageElement;
     name: string;
-    counter:HTMLElement|null = null;
+    counter:HTMLElement|HTMLImageElement|null = null;
     constructor(name: string, x: number, y: number, width: number, type: "counter" | "meter" | "image", options: StatOptions) {
         this.element = document.createElement("stat");
         this.width = width * 32;
@@ -51,6 +51,9 @@ class Statitem {
                 const img = new Image();
                 img.src = `assets/${options.image}.png`
                 this.child = img;
+                this.counter = new Image()
+                this.counter.classList.add("held");
+                this.child.appendChild(this.counter);
                 break;
             default:
                 this.child = document.createElement("div") as HTMLElement;
@@ -58,5 +61,22 @@ class Statitem {
         this.child.classList.add("statItem", this.type, this.name);
         this.element.classList.add(this.name);
         this.element.appendChild(this.child)
+    }
+
+    update(value:string|number){
+        console.log(`Stat item ${this.type} of ${this.name} has been updated to value ${value}`)
+        switch(this.type){
+            case "counter":
+                if(this.counter!==null) this.counter.innerHTML = value as string;
+                break;
+            case "meter":
+                this.child.setAttribute("value", value.toString());
+                break;
+            case "image":
+                const img = new Image();
+                img.src = `assets/${value}.png`;
+                this.counter = img;
+                break;
+        }
     }
 }

@@ -175,6 +175,20 @@ stat .item.image {
     margin: 2px;
 }
 
+.floorcounter.counter span{
+    display: block;
+    font-size: 18px;
+    float: right;
+    position: relative;
+    width: 26px;
+    height: 26px;
+    color: white;
+    margin: 4px 4px 0px 4px;
+    top: 0px;
+    border: 1px solid white;
+    text-align: center;
+}
+
 stat .counter.score {
     width: 96px;
     border: 1px solid white;
@@ -182,6 +196,17 @@ stat .counter.score {
     height: 26px;
     margin: 4px 34px 0px 16px ;
     top: 0px;
+}
+
+.counter.score span{
+    width: 100%;
+    display: block;
+    height: 100%;
+    text-align: right;
+    font-size: 18px;
+    float: right;
+    position: relative;
+    top: -22px;
 }
 
 .counter.score .icon {

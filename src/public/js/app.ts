@@ -8,9 +8,10 @@ type Direction = { x: number, y: number };
 let narrator: Narrator;
 let View:Viewport;
 let StatPanel:Statpanel;
-let Score:Statitem;
+let ScorePanel:Statitem;
 let Health:Statitem;
-let Item:Statitem;
+let ItemPanel:Statitem;
+let FloorPanel:Statitem;
 const DIRECTIONS: Direction[] = [ // UP/DOWN/LEFT/RIGHT
     {
         x: 0,
@@ -53,12 +54,16 @@ async function ready() {
     View = new Viewport(7,7,["viewport"])
     narrator = new Narrator();
     StatPanel = new Statpanel(7, 1);
-    Score = new Statitem("score", 0.5,0,4,"counter",{"image":"counter","icon":"score"});
+    ScorePanel = new Statitem("score", 0.5,0,4,"counter",{"image":"counter","icon":"score"});
     Health = new Statitem("health", 1,0,3,"meter",{"image":"counter", "icon":"health"});
-    Item = new Statitem("item", 1,0,1,"image",{"image":"item"}); 
-    StatPanel.element.appendChild(Score.element);
+    ItemPanel = new Statitem("item", 1,0,1,"image",{"image":"item"});
+    FloorPanel = new Statitem("floorcounter",1,0,1,"counter",{}) 
+    StatPanel.element.appendChild(ScorePanel.element);
     StatPanel.element.appendChild(Health.element);
-    StatPanel.element.appendChild(Item.element);
+    StatPanel.element.appendChild(ItemPanel.element);
+    StatPanel.element.appendChild(FloorPanel.element);
+    FloorPanel.update(1);
+    ScorePanel.update(0);
     if (root) {
         for (let y = 0; y < rows; y++) {
             const row = document.createElement("div");
@@ -110,7 +115,7 @@ async function Generate(map: string) {
 
 async function placePlayer() {
     const start: number[] = await MAP.findOpenCell();
-    PLAYER = new Entity("Player", 10, 1, start[0], start[1], ["player"]);
+    PLAYER = new Entity("Player", [10,10], 1, start[0], start[1], ["player"]);
     View.update(PLAYER);
     console.log(`Placing player to start at ${start[0]}, ${start[1]}`)
     const startCell = MAP.getCell(start[0], start[1]);
@@ -128,6 +133,7 @@ async function placePlayer() {
     const enemyCell = MAP.getCell(testEnemyLoc[0], testEnemyLoc[1]);
     await enemyCell.Enter(Enemies[0]);
     RegisterHotkeys();
+    Health.update(100 * Math.floor(PLAYER.hp / PLAYER.hp_max))
 }
 
 async function RegisterHotkeys() {
@@ -209,6 +215,7 @@ async function gamepadHandler(event: GamepadEvent, connected: boolean) {
                     if(didMove){
                         for(const Enemy of Enemies){
                             await Enemy.wander.call(Enemy);
+                            Health.update(Math.floor(100 * (PLAYER.hp / PLAYER.hp_max)))
                         }
                         
                     }
@@ -268,12 +275,14 @@ async function keyDown(event: KeyboardEvent) {
     if(didMove){
         for(const Enemy of Enemies){
             await Enemy.wander.call(Enemy);
+            Health.update(Math.floor(100 * (PLAYER.hp / PLAYER.hp_max)))
         }
     }
 }
 
 function move(direction: number):Promise<boolean> {
     return new Promise((resolve) => {
+        Health.update(Math.floor(100 * (PLAYER.hp / PLAYER.hp_max)))
         if (PLAYER.canMove && !narrator.onScreen) {
             console.log(moveDirections[direction]);
             PLAYER.Move(moveDirections[direction], View);

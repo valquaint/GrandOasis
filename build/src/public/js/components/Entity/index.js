@@ -10,7 +10,8 @@ class Entity {
     htmlElement;
     onDeath;
     movePattern = "none";
-    constructor(name, hp, damage, x, y, style, onDeath, movePattern) {
+    scoreValue = 0;
+    constructor(name, hp, damage, x, y, style, onDeath, movePattern, scoreValue) {
         this.name = name;
         if (typeof hp !== "number") {
             this.hp = hp[0];
@@ -29,22 +30,31 @@ class Entity {
             this.onDeath = () => new Promise((resolve) => resolve(console.log("Rip anonymous")));
         if (movePattern)
             this.movePattern = movePattern;
+        if (scoreValue)
+            this.scoreValue = scoreValue;
     }
     async Bump(source) {
-        if (source !== this) {
-            source.hp -= this.damage;
-            console.log(`${source.name} calls BUMP on ${this.name}`);
-            if (source.hp <= 0) {
-                if (this.onDeath !== undefined)
-                    await this.onDeath();
+        return new Promise(async (resolve) => {
+            if (source !== this) {
+                this.hp -= source.damage;
+                console.log(`${source.name} calls BUMP on ${this.name}, dealing ${source.damage} to ${this.name}. ${this.name}'s HP is now ${this.hp}`);
+                if (this.hp <= 0) {
+                    if (this.onDeath !== undefined)
+                        await this.onDeath();
+                    resolve(true);
+                }
+                resolve(true);
             }
-            return true;
-        }
-        return false;
+            resolve(false);
+        });
     }
     Move(dir, view) {
         return new Promise(async (resolve) => {
             console.log(`Moving ${this.name} in direction ${dir.x}, ${dir.y}. They should be moving to ${this.x + dir.x}, ${this.y + dir.y}`);
+            this.element.classList.remove("left", "right", "up", "down");
+            if (dir.name) {
+                this.element.classList.add(dir.name);
+            }
             const oldCell = MAP.getCell(this.x, this.y);
             const cell = MAP.getCell(this.x + dir.x, this.y + dir.y);
             if (cell.type === "floor") {

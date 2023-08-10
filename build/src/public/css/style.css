@@ -104,10 +104,24 @@ viewport {
     width: 64px;
     aspect-ratio: 1 / 1;
     z-index: 3;
-    background-color: #f00;
+    background: url("../assets/player/down.gif");
     display: block;
     float: inherit;
     position: relative;
+    image-rendering: pixelated;
+}
+
+.player.down{
+    background: url("../assets/player/down.gif");
+}
+.player.right{
+    background: url("../assets/player/right.gif");
+}
+.player.left{
+    background: url("../assets/player/left.gif");
+}
+.player.up{
+    background: url("../assets/player/up.gif");
 }
 
 .enemy {
@@ -244,4 +258,10 @@ progress::-webkit-progress-bar {
         flex-wrap: wrap;
         align-content: space-between;
     }
+}
+
+/* Enemy Sprites */
+
+.bat {
+    background: url("../assets/enemies/bat/down.gif");
 }

@@ -10,9 +10,10 @@ class Entity {
     htmlElement: HTMLElement;
     onDeath: Function;
     movePattern: Entity | string = "none";
-    constructor(name: string, hp: number|number[], damage: number, x: number, y: number, style: string[], onDeath?: Function, movePattern?: Entity | string) {
+    scoreValue: number = 0;
+    constructor(name: string, hp: number | number[], damage: number, x: number, y: number, style: string[], onDeath?: Function, movePattern?: Entity | string, scoreValue?: number) {
         this.name = name;
-        if(typeof hp !== "number") {
+        if (typeof hp !== "number") {
             this.hp = hp[0];
             this.hp_max = hp[1];
         }
@@ -25,23 +26,30 @@ class Entity {
         if (onDeath !== undefined) this.onDeath = onDeath;
         else this.onDeath = () => new Promise((resolve) => resolve(console.log("Rip anonymous")))
         if (movePattern) this.movePattern = movePattern;
+        if (scoreValue) this.scoreValue = scoreValue;
     }
 
     public async Bump(source: Entity) {
-        if (source !== this) {
-            source.hp -= this.damage;
-            console.log(`${source.name} calls BUMP on ${this.name}`)
-            if (source.hp <= 0) {
-                if (this.onDeath !== undefined) await this.onDeath()
+        return new Promise(async (resolve) => {
+            if (source !== this) {
+                this.hp -= source.damage;
+                console.log(`${source.name} calls BUMP on ${this.name}, dealing ${source.damage} to ${this.name}. ${this.name}'s HP is now ${this.hp}`)
+                if (this.hp <= 0) {
+                    if (this.onDeath !== undefined) await this.onDeath()
+                    resolve(true)
+                }
+                resolve(true)
             }
-            return true
-        }
-        return false
+            resolve(false)
+        })
+
     }
 
-    public Move(dir: Direction, view?:Viewport) {
+    public Move(dir: Direction, view?: Viewport) {
         return new Promise(async (resolve) => {
             console.log(`Moving ${this.name} in direction ${dir.x}, ${dir.y}. They should be moving to ${this.x + dir.x}, ${this.y + dir.y}`);
+            this.element.classList.remove("left", "right", "up", "down");
+            if (dir.name) { this.element.classList.add(dir.name) }
             const oldCell: GridCell = MAP.getCell(this.x, this.y);
             const cell: GridCell = MAP.getCell(this.x + dir.x, this.y + dir.y);
             if (cell.type === "floor") {
@@ -51,7 +59,7 @@ class Entity {
                     if (success) {
                         this.x += dir.x;
                         this.y += dir.y;
-                        if(view) view.update(this);
+                        if (view) view.update(this);
                     }
                     resolve(success);
                 } else {
@@ -60,12 +68,12 @@ class Entity {
                         resolve(true);
                     }
                 }
-    
+
             }
             this.movable = false;
             setTimeout(() => { this.movable = true }, 500);
             resolve(false);
-    
+
         })
     }
 

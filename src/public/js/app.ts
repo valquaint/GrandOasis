@@ -4,11 +4,12 @@ let columns = 12;
 let MAP: GameMap;
 let PLAYER: Entity;
 let Enemies:Entity[] = new Array<Entity>
-type Direction = { x: number, y: number };
+type Direction = { x: number, y: number, name?:string};
 let narrator: Narrator;
 let View:Viewport;
 let StatPanel:Statpanel;
 let ScorePanel:Statitem;
+let Score:number = 0;
 let Health:Statitem;
 let ItemPanel:Statitem;
 let FloorPanel:Statitem;
@@ -34,19 +35,23 @@ const DIRECTIONS: Direction[] = [ // UP/DOWN/LEFT/RIGHT
 const moveDirections: Direction[] = [ // UP/DOWN/LEFT/RIGHT
     {
         x: 0,
-        y: -1
+        y: -1,
+        name:"up"
     },
     {
         x: 0,
-        y: 1
+        y: 1,
+        name:"down"
     },
     {
         x: -1,
-        y: 0
+        y: 0,
+        name:"left"
     },
     {
         x: 1,
-        y: 0
+        y: 0,
+        name:"right"
     },
 ]
 async function ready() {
@@ -63,7 +68,7 @@ async function ready() {
     StatPanel.element.appendChild(ItemPanel.element);
     StatPanel.element.appendChild(FloorPanel.element);
     FloorPanel.update(1);
-    ScorePanel.update(0);
+    ScorePanel.update(Score);
     if (root) {
         for (let y = 0; y < rows; y++) {
             const row = document.createElement("div");
@@ -121,11 +126,13 @@ async function placePlayer() {
     const startCell = MAP.getCell(start[0], start[1]);
     await startCell.Enter(PLAYER);
     const testEnemyLoc: number[] = await MAP.findOpenCell();
-    Enemies.push(new Entity("Enemy", 10, 1, testEnemyLoc[0], testEnemyLoc[1], ["enemy"], async () => {
+    Enemies.push(new Enemy(1, testEnemyLoc[0], testEnemyLoc[1], async () => {
         await Narrate("Blargh! I am slain!");
         document.querySelector(".enemy")?.remove();
         const currCell = MAP.getCell(Enemies[0].x, Enemies[0].y);
         await currCell.Exit(Enemies[0]);
+        Score += Enemies[0].scoreValue;
+        ScorePanel.update(Score);
         delete Enemies[0];
         Enemies.splice(0,1);
     }, PLAYER));

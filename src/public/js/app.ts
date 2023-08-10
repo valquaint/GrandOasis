@@ -7,6 +7,10 @@ let Enemies:Entity[] = new Array<Entity>
 type Direction = { x: number, y: number };
 let narrator: Narrator;
 let View:Viewport;
+let StatPanel:Statpanel;
+let Score:Statitem;
+let Health:Statitem;
+let Item:Statitem;
 const DIRECTIONS: Direction[] = [ // UP/DOWN/LEFT/RIGHT
     {
         x: 0,
@@ -48,6 +52,13 @@ async function ready() {
     root = document.querySelector("#root") as HTMLElement;
     View = new Viewport(7,7,["viewport"])
     narrator = new Narrator();
+    StatPanel = new Statpanel(7, 1);
+    Score = new Statitem("score", 0.5,0,4,"counter",{"image":"counter","icon":"score"});
+    Health = new Statitem("health", 1,0,3,"meter",{"image":"counter", "icon":"health"});
+    Item = new Statitem("item", 1,0,1,"image",{"image":"item"}); 
+    StatPanel.element.appendChild(Score.element);
+    StatPanel.element.appendChild(Health.element);
+    StatPanel.element.appendChild(Item.element);
     if (root) {
         for (let y = 0; y < rows; y++) {
             const row = document.createElement("div");

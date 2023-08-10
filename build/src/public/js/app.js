@@ -7,6 +7,10 @@ let PLAYER;
 let Enemies = new Array;
 let narrator;
 let View;
+let StatPanel;
+let Score;
+let Health;
+let Item;
 const DIRECTIONS = [
     {
         x: 0,
@@ -47,6 +51,13 @@ async function ready() {
     root = document.querySelector("#root");
     View = new Viewport(7, 7, ["viewport"]);
     narrator = new Narrator();
+    StatPanel = new Statpanel(7, 1);
+    Score = new Statitem("score", 0.5, 0, 4, "counter", { "image": "counter", "icon": "score" });
+    Health = new Statitem("health", 1, 0, 3, "meter", { "image": "counter", "icon": "health" });
+    Item = new Statitem("item", 1, 0, 1, "image", { "image": "item" });
+    StatPanel.element.appendChild(Score.element);
+    StatPanel.element.appendChild(Health.element);
+    StatPanel.element.appendChild(Item.element);
     if (root) {
         for (let y = 0; y < rows; y++) {
             const row = document.createElement("div");

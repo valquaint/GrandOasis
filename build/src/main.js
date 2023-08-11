@@ -83,7 +83,7 @@ app.use("/", express.static(path.resolve(path.join(__dirname, "./public"))));
 const findPort = ENVIRONMENT.PORT || config?.port || 4242;
 app.listen(findPort, console.log(`Test Server is live at http://localhost:${findPort}`));
 app.post("/console", (req, res) => {
-    if (process.argv.indexOf("debug") > -1) {
+    if (process.argv.indexOf("debug") >= -1) {
         for (const r of req.body) {
             if (typeof (r) === "object") {
                 winston.info("From frontend, Object:");

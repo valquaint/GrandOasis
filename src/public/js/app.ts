@@ -59,6 +59,8 @@ const moveDirections: Direction[] = [ // UP/DOWN/LEFT/RIGHT
     },
 ]
 async function ready() {
+
+    document.addEventListener('touchstart', await createMobileControls);
     root = document.querySelector("#root") as HTMLElement;
     loading = document.querySelector("#loading") as HTMLElement;
     View = new Viewport(7, 7, ["viewport"])
@@ -90,6 +92,90 @@ async function ready() {
     StatPanel.element.appendChild(ItemPanel.element);
     StatPanel.element.appendChild(DamagePanel.element);
     StatPanel.element.appendChild(FloorPanel.element);
+}
+
+async function createMobileControls(){
+    const mobileControls:HTMLElement = document.createElement("div");
+    mobileControls.classList.add("mobileControls");
+    document.body.appendChild(mobileControls);
+
+    const downButton:HTMLElement = document.createElement("button");
+    downButton.classList.add("down");
+    const dArrow = document.createElement("span");
+    downButton.appendChild(dArrow);
+    downButton.addEventListener("click", async () =>{
+        let didMove: boolean = false;
+        didMove = await move(1);
+        if (didMove) {
+            for (const Enemy of Enemies) {
+                await Enemy.wander.call(Enemy);
+                Health.update(Math.floor(100 * (PLAYER.hp / PLAYER.hp_max)))
+            }
+
+        }
+    } )
+    mobileControls.appendChild(downButton);
+    
+    const upButton:HTMLElement = document.createElement("button");
+    upButton.classList.add("up")
+    const uArrow = document.createElement("span");
+    upButton.appendChild(uArrow);
+    upButton.addEventListener("click", async () =>{
+        let didMove: boolean = false;
+        didMove = await move(0);
+        if (didMove) {
+            for (const Enemy of Enemies) {
+                await Enemy.wander.call(Enemy);
+                Health.update(Math.floor(100 * (PLAYER.hp / PLAYER.hp_max)))
+            }
+
+        }
+    } )
+    mobileControls.appendChild(upButton);
+    
+    const leftButton:HTMLElement = document.createElement("button");
+    leftButton.classList.add("left")
+    const lArrow = document.createElement("span");
+    leftButton.appendChild(lArrow);
+    leftButton.addEventListener("click", async () => {
+        let didMove: boolean = false;
+        didMove = await move(2);
+        if (didMove) {
+            for (const Enemy of Enemies) {
+                await Enemy.wander.call(Enemy);
+                Health.update(Math.floor(100 * (PLAYER.hp / PLAYER.hp_max)))
+            }
+
+        }
+    } )
+    mobileControls.appendChild(leftButton);
+    
+    const rightButton:HTMLElement = document.createElement("button");
+    rightButton.classList.add("right");
+    const rArrow = document.createElement("span");
+    rightButton.appendChild(rArrow);
+    rightButton.addEventListener("click", async () =>{
+        let didMove: boolean = false;
+        didMove = await move(3);
+        if (didMove) {
+            for (const Enemy of Enemies) {
+                await Enemy.wander.call(Enemy);
+                Health.update(Math.floor(100 * (PLAYER.hp / PLAYER.hp_max)))
+            }
+
+        }
+    } )
+    mobileControls.appendChild(rightButton);
+
+    const confirmButton:HTMLElement = document.createElement("button");
+    confirmButton.classList.add("confirm");
+    confirmButton.addEventListener("click", async () => {
+        if (narrator.onScreen) {
+            console.log("Closing Narrator");
+            narrator.clear();
+        }
+    })
+    mobileControls.appendChild(confirmButton);
 }
 
 async function GameLoop() {

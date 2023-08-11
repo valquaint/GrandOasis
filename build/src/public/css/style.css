@@ -111,16 +111,19 @@ viewport {
     image-rendering: pixelated;
 }
 
-.player.down{
+.player.down {
     background: url("../assets/player/down.gif");
 }
-.player.right{
+
+.player.right {
     background: url("../assets/player/right.gif");
 }
-.player.left{
+
+.player.left {
     background: url("../assets/player/left.gif");
 }
-.player.up{
+
+.player.up {
     background: url("../assets/player/up.gif");
 }
 
@@ -162,7 +165,7 @@ stat {
     object-fit: cover;
 }
 
-.counter.score .icon{
+.counter.score .icon {
     float: left;
     position: relative;
     left: -32px;
@@ -177,12 +180,14 @@ progress {
     display: block;
     width: 128px;
 }
+
 .health .icon {
     float: left;
     left: -32px;
     position: relative;
     margin: 2px 0px;
 }
+
 stat .item.image {
     object-fit: contain;
     width: 32px;
@@ -215,11 +220,11 @@ stat .counter.score {
     border: 1px solid white;
     display: block;
     height: 26px;
-    margin: 4px 34px 0px 40px ;
+    margin: 4px 34px 0px 40px;
     top: 0px;
 }
 
-.counter.score span{
+.counter.score span {
     width: 100%;
     display: block;
     height: 100%;
@@ -278,8 +283,8 @@ progress::-webkit-progress-bar {
     left: 0px;
     z-index: 99;
     color: white;
-    padding:0;
-    margin:0;
+    padding: 0;
+    margin: 0;
 }
 
 #loading .loadinggear {
@@ -302,14 +307,15 @@ progress::-webkit-progress-bar {
     left: calc(50% + 32px);
     font-size: 32px;
     text-shadow: #000 1px 1px 0px, #000 -1px 1px 0px, #000 1px -1px 0px, #000 -1px -1px 0px;
-    font-family:Arial, Helvetica, sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 @keyframes rotate {
     0% {
         transform: rotate(0deg);
     }
-    100%{
+
+    100% {
         transform: rotate(360deg);
     }
 }
@@ -337,9 +343,11 @@ stairs {
     background: url("../assets/enemies/rat/left.gif");
     image-rendering: pixelated;
 }
+
 .rat.left {
     background: url("../assets/enemies/rat/left.gif");
 }
+
 .rat.right {
     background: url("../assets/enemies/rat/right.gif");
 }
@@ -348,10 +356,82 @@ stairs {
     background: url("../assets/enemies/slime/left.gif");
     image-rendering: pixelated;
 }
+
 .slime.left {
     background: url("../assets/enemies/slime/left.gif");
 }
+
 .slime.right {
     background: url("../assets/enemies/slime/left.gif");
     transform: rotateY(180deg);
+}
+
+/* Mobile Controls Styles */
+
+.mobileControls {
+    position: absolute;
+    float: left;
+    z-index: 80;
+    top: 0px;
+    width: 448px;
+    aspect-ratio: 1 / 1;
+}
+.mobileControls >* {
+    border: none;
+    background-color: #00000000;
+    
+}
+
+.mobileControls >* > * {
+    background-color: #ffffff88;
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+    height: 32px;
+    width: 32px;
+    transform: rotate(180deg);
+    position: absolute;
+    margin: -22px 0px 0px -16px;
+}
+
+.mobileControls .down {
+    clip-path: polygon(25% 0, 75% 0, 100% 100%, 0% 100%);
+    height: 112px;
+    width: 448px;
+    position: absolute;
+    top: 336px;
+}
+
+.mobileControls .up {
+    clip-path: polygon(25% 0, 75% 0, 100% 100%, 0% 100%);
+    height: 112px;
+    width: 448px;
+    position: absolute;
+    transform: rotate(180deg);
+}
+
+.mobileControls .left {
+    clip-path: polygon(25% 0, 75% 0, 100% 100%, 0% 100%);
+    height: 112px;
+    width: 448px;
+    position: absolute;
+    top: 168px;
+    left: -168px;
+    transform: rotate(90deg);
+}
+
+.mobileControls .right {
+    clip-path: polygon(25% 0, 75% 0, 100% 100%, 0% 100%);
+    height: 112px;
+    width: 448px;
+    position: absolute;
+    top: 168px;
+    left:168px;
+    transform: rotate(-90deg);
+}
+
+.mobileControls .confirm {
+    height: 224px;
+    width: 224px;
+    position: absolute;
+    top: 112px;
+    left: 112px;
 }

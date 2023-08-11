@@ -32,10 +32,14 @@ class Entity {
     public async Bump(source: Entity) {
         return new Promise(async (resolve) => {
             if (source !== this) {
-                this.hp -= source.damage;
-                console.log(`${source.name} calls BUMP on ${this.name}, dealing ${source.damage} to ${this.name}. ${this.name}'s HP is now ${this.hp}`)
-                if (this.hp <= 0) {
-                    if (this.onDeath !== undefined) await this.onDeath()
+                if (source.hp_max > 0 || this.hp_max > 0) {
+                    this.hp -= source.damage;
+                    console.log(`${source.name} calls BUMP on ${this.name}, dealing ${source.damage} to ${this.name}. ${this.name}'s HP is now ${this.hp}`)
+                    if (this.hp <= 0) {
+                        if (this.onDeath !== undefined) await this.onDeath()
+                        resolve(true)
+                    }
+                }else{
                     resolve(true)
                 }
                 resolve(true)
@@ -64,7 +68,7 @@ class Entity {
                     resolve(success);
                 } else {
                     for (const obj of cell.getContents) {
-                        await obj.Bump(this);
+                        if (this.hp > 0) await obj.Bump(this);
                         resolve(true);
                     }
                 }
@@ -83,13 +87,17 @@ class Entity {
             const distY = (this.y - trg.y)
             const dist = Math.ceil(Math.hypot(distX + distY));
             console.log(`Distance from ${this.name} to ${trg.name} is ${dist}`)
-            let dir: Direction = { x: 0, y: 0 };
+            let dir: Direction = { x: 0, y: 0, name: "" };
             if (Math.abs(trg.x - this.x) + Math.abs(trg.y - this.y) <= 1) {
                 dir = {
                     x: trg.x - this.x,
                     y: trg.y - this.y
                 }
             }
+            if (dir.x === 1) dir.name = "right"
+            if (dir.x === -1) dir.name = "left"
+            if (dir.y === 1) dir.name = "down"
+            if (dir.y === -1) dir.name = "up"
             return { dist: dist, dir: dir };
         }
         console.log(typeof this.movePattern)

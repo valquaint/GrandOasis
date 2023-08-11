@@ -12,7 +12,7 @@ let StatPanel;
 let ScorePanel;
 let Score = 0;
 let Health;
-let Floor = 0;
+let Floor = 6;
 let ItemPanel;
 let FloorPanel;
 let DamagePanel;
@@ -84,6 +84,11 @@ async function ready() {
         }
     }
     await GameLoop();
+    StatPanel.element.appendChild(ScorePanel.element);
+    StatPanel.element.appendChild(Health.element);
+    StatPanel.element.appendChild(ItemPanel.element);
+    StatPanel.element.appendChild(DamagePanel.element);
+    StatPanel.element.appendChild(FloorPanel.element);
 }
 async function GameLoop() {
     if (Floor < 100) {
@@ -96,13 +101,6 @@ async function GameLoop() {
         columns = 10 + Math.floor((Floor / 100) * 10);
         console.log(`I will generate a ${columns} x ${rows} ${mapgen} map`);
         await Generate(mapgen);
-        StatPanel.element.appendChild(ScorePanel.element);
-        StatPanel.element.appendChild(Health.element);
-        StatPanel.element.appendChild(ItemPanel.element);
-        StatPanel.element.appendChild(DamagePanel.element);
-        StatPanel.element.appendChild(FloorPanel.element);
-        FloorPanel.update(Floor);
-        ScorePanel.update(Score);
     }
 }
 async function clearMap() {
@@ -126,38 +124,96 @@ async function clearMap() {
     }
 }
 async function Generate(map) {
-    // TODO: Loading screen overlay during generation
     await clearMap();
     MAP = new GameMap(columns, rows, map, DIRECTIONS);
     await MAP.processMaze(columns, rows);
+    // TODO: Create placeExit(), placeKey(), and placeChests()
     await MAP.testwfc(placePlayer);
+}
+async function placeExit() {
+    const getDistance = (trg, x, y) => {
+        const distX = (x - trg.x);
+        const distY = (y - trg.y);
+        const dist = Math.ceil(Math.hypot(distX + distY));
+        console.log(`Distance from ${x},${y} to ${trg.name} is ${dist}`);
+        let dir = { x: 0, y: 0, name: "" };
+        if (Math.abs(trg.x - x) + Math.abs(trg.y - y) <= 1) {
+            dir = {
+                x: trg.x - x,
+                y: trg.y - y
+            };
+        }
+        if (dir.x === 1)
+            dir.name = "right";
+        if (dir.x === -1)
+            dir.name = "left";
+        if (dir.y === 1)
+            dir.name = "down";
+        if (dir.y === -1)
+            dir.name = "up";
+        return { dist: dist, dir: dir };
+    };
+    let exit = await MAP.findOpenCell();
+    let attempts = 0;
+    while (getDistance(PLAYER, exit[0], exit[1]).dist < (5 - Math.floor(attempts / 50))) {
+        exit = await MAP.findOpenCell();
+        attempts++;
+    }
+    console.log(`I should place the exit on ${exit[0]}, ${exit[1]} (${attempts} attempts taken)`);
+}
+async function placeEnemies() {
+    let numEnemies = Math.ceil(Math.random() * Floor);
+    console.log(`Placing ${numEnemies} enemies`);
+    while (numEnemies) {
+        const testEnemyLoc = await MAP.findOpenCell();
+        const eSelector = `F${Floor}-${numEnemies}`;
+        const currEnemy = new Enemy(Math.ceil((Floor / 100) * 10), testEnemyLoc[0], testEnemyLoc[1], () => null, PLAYER);
+        const eOnDeath = async () => {
+            document.querySelector(`.enemy.${eSelector}`)?.remove();
+            const locEnemy = Enemies.indexOf(currEnemy);
+            const currCell = MAP.getCell(Enemies[locEnemy].x, Enemies[locEnemy].y);
+            console.log(`Calling DEATH EXIT from ${Enemies[locEnemy].name} function`);
+            await currCell.Exit(Enemies[locEnemy]);
+            Score += Enemies[locEnemy].scoreValue;
+            console.log(`Enemy ${Enemies[locEnemy].name} was slain`);
+            ScorePanel.update(Score);
+            delete Enemies[locEnemy];
+            Enemies.splice(locEnemy, 1);
+        };
+        currEnemy.onDeath = eOnDeath;
+        currEnemy.element.classList.add(eSelector);
+        Enemies.push(currEnemy);
+        console.log(`Placing enemy ${currEnemy.name} to start at ${testEnemyLoc[0]}, ${testEnemyLoc[1]}`);
+        const enemyCell = MAP.getCell(testEnemyLoc[0], testEnemyLoc[1]);
+        await enemyCell.Enter(currEnemy);
+        numEnemies--;
+    }
 }
 async function placePlayer() {
     const start = await MAP.findOpenCell();
-    PLAYER = new Entity("Player", [10, 10], 1, start[0], start[1], ["player"]);
+    if (!PLAYER?.name) {
+        PLAYER = new Entity("Player", [10, 10], 1, start[0], start[1], ["player"]);
+        console.log(`Placing player to start at ${start[0]}, ${start[1]}`);
+        const startCell = MAP.getCell(start[0], start[1]);
+        await startCell.Enter(PLAYER);
+    }
+    else {
+        console.log(`Placing player to start at ${start[0]}, ${start[1]}`);
+        const startCell = MAP.getCell(start[0], start[1]);
+        await startCell.Enter(PLAYER);
+        PLAYER.x = start[0];
+        PLAYER.y = start[1];
+    }
     View.update(PLAYER);
     DamagePanel.update(PLAYER.damage);
-    console.log(`Placing player to start at ${start[0]}, ${start[1]}`);
-    const startCell = MAP.getCell(start[0], start[1]);
-    await startCell.Enter(PLAYER);
-    const testEnemyLoc = await MAP.findOpenCell();
-    Enemies.push(new Enemy(1, testEnemyLoc[0], testEnemyLoc[1], async () => {
-        await Narrate("Blargh! I am slain!");
-        document.querySelector(".enemy")?.remove();
-        const currCell = MAP.getCell(Enemies[0].x, Enemies[0].y);
-        await currCell.Exit(Enemies[0]);
-        Score += Enemies[0].scoreValue;
-        ScorePanel.update(Score);
-        delete Enemies[0];
-        Enemies.splice(0, 1);
-        GameLoop();
-    }, PLAYER));
-    console.log(`Placing enemy to start at ${testEnemyLoc[0]}, ${testEnemyLoc[1]}`);
-    const enemyCell = MAP.getCell(testEnemyLoc[0], testEnemyLoc[1]);
-    await enemyCell.Enter(Enemies[0]);
+    await placeEnemies();
     RegisterHotkeys();
     Health.update(100 * Math.floor(PLAYER.hp / PLAYER.hp_max));
     loading.style.display = "none";
+    FloorPanel.update(Floor);
+    ScorePanel.update(Score);
+    Health.update(Math.floor(100 * (PLAYER.hp / PLAYER.hp_max)));
+    await placeExit();
 }
 async function RegisterHotkeys() {
     document.addEventListener("keydown", keyDown);

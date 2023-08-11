@@ -1,6 +1,5 @@
 class GameMap {
     cells: any;
-    lastDirection: any; // TODO: type this
     directionCount: number = 0;
     step: number = 0;
     STEPS: HTMLElement[] = [];

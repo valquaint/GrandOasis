@@ -1,7 +1,6 @@
 "use strict";
 class GameMap {
     cells;
-    lastDirection; // TODO: type this
     directionCount = 0;
     step = 0;
     STEPS = [];

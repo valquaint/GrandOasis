@@ -1,5 +1,6 @@
 const EnemyRanks = [
-    [{name:"Bat", hp:1, damage:1, style:["enemy","bat"], scoreValue:1}],
+    [{name:"Bat", hp:1, damage:1, style:["enemy","bat"], scoreValue:1},{name:"Rat", hp:1, damage:1, style:["enemy","rat"], scoreValue:1},{name:"Slime", hp:3, damage:2, style:["enemy","slime"], scoreValue:5}],
+
 ]
 
 class Enemy extends Entity{

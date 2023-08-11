@@ -267,11 +267,6 @@ progress::-webkit-progress-bar {
     }
 }
 
-/* Enemy Sprites */
-
-.bat {
-    background: url("../assets/enemies/bat/down.gif");
-}
 
 #loading {
     position: absolute;
@@ -317,4 +312,35 @@ progress::-webkit-progress-bar {
     100%{
         transform: rotate(360deg);
     }
+}
+
+
+/* Enemy Sprites */
+
+.bat {
+    background: url("../assets/enemies/bat/down.gif");
+    image-rendering: pixelated;
+}
+
+.rat {
+    background: url("../assets/enemies/rat/left.gif");
+    image-rendering: pixelated;
+}
+.rat.left {
+    background: url("../assets/enemies/rat/left.gif");
+}
+.rat.right {
+    background: url("../assets/enemies/rat/right.gif");
+}
+
+.slime {
+    background: url("../assets/enemies/slime/left.gif");
+    image-rendering: pixelated;
+}
+.slime.left {
+    background: url("../assets/enemies/slime/left.gif");
+}
+.slime.right {
+    background: url("../assets/enemies/slime/left.gif");
+    transform: rotateY(180deg);
 }

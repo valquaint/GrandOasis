@@ -1,27 +1,6 @@
 body {
-    margin: 0px;
-    object-fit: contain;
-    aspect-ratio: 1 / 1;
-}
-
-#hud {
-    position: absolute;
-    float: right;
-    z-index: 20;
-    display: inline;
-    top: 0px;
-    left: 0px;
-}
-
-#output {
-    display: none;
-}
-
-viewport {
     display: flex;
-    overflow: hidden;
 }
-
 .row {
     display: flex;
     flex-direction: row;
@@ -34,7 +13,7 @@ viewport {
     flex: 1;
 }
 
-.column>* {
+.column > * {
     /* border: 2px solid black; */
     width: 64px;
     aspect-ratio: 1 / 1;
@@ -51,12 +30,11 @@ viewport {
 .floor {
     background-color: rgb(0, 0, 0);
 }
-
 .wall {
     background-color: #3f3f3f;
 }
 
-.edge {
+.edge  {
     background-color: #3f3f3f;
 }
 
@@ -69,10 +47,9 @@ viewport {
     width: 200px;
     height: 200px;
     image-rendering: pixelated;
-    display: none;
 }
 
-.tile {
+.tile{
     width: 64px;
     height: 64px;
     z-index: 2;
@@ -86,10 +63,10 @@ viewport {
 }
 
 .demo {
-    display: none;
+    display: flex;
 }
 
-.demo>* {
+.demo > *{
     width: 16px;
     height: 16px;
     z-index: 2;
@@ -97,261 +74,4 @@ viewport {
     margin: 0px 0px;
     object-fit: contain;
     image-rendering: pixelated;
-    display: none;
-}
-
-.player {
-    width: 64px;
-    aspect-ratio: 1 / 1;
-    z-index: 3;
-    background: url("../assets/player/down.gif");
-    display: block;
-    float: inherit;
-    position: relative;
-    image-rendering: pixelated;
-}
-
-.player.down{
-    background: url("../assets/player/down.gif");
-}
-.player.right{
-    background: url("../assets/player/right.gif");
-}
-.player.left{
-    background: url("../assets/player/left.gif");
-}
-.player.up{
-    background: url("../assets/player/up.gif");
-}
-
-.enemy {
-
-    width: 64px;
-    aspect-ratio: 1 / 1;
-    z-index: 3;
-    background-color: #ff0;
-    display: block;
-    float: inherit;
-    position: relative;
-}
-
-.statpanel {
-    position: absolute;
-    background: #000000;
-    border: 2px solid white;
-    box-shadow: #000 2px 2px 0px 0px, #000 -2px 2px 0px 0px, #000 2px -2px 0px 0px, #000 -2px -2px 0px 0px;
-    color: white;
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: row;
-    justify-content: space-around;
-}
-
-
-stat {
-    display: block;
-    position: relative;
-    z-index: 22;
-    height: 32px;
-    color: white;
-    margin: 4px 0px 0px 0px;
-}
-
-.counter {
-    height: 32px;
-    object-fit: cover;
-}
-
-.counter.score .icon{
-    float: left;
-    position: relative;
-    left: -32px;
-}
-
-progress {
-    appearance: none;
-    -webkit-appearance: none;
-    border: 1px solid white;
-    margin: 4px 0px 0px 0px;
-    height: 28px;
-    display: block;
-    width: 128px;
-}
-.health .icon {
-    float: left;
-    left: -32px;
-    position: relative;
-    margin: 2px 0px;
-}
-stat .item.image {
-    object-fit: contain;
-    width: 32px;
-    margin: 2px;
-}
-
-stat .damagecounter.image {
-    object-fit: contain;
-    width: 32px;
-    margin: 2px;
-}
-
-span.value {
-    display: block;
-    position: absolute;
-    width: 28px;
-    height: 32px;
-    text-align: center;
-    padding: 10px 4px;
-}
-
-stat .floorcounter.image {
-    object-fit: contain;
-    width: 32px;
-    margin: 2px;
-}
-
-stat .counter.score {
-    width: 96px;
-    border: 1px solid white;
-    display: block;
-    height: 26px;
-    margin: 4px 34px 0px 40px ;
-    top: 0px;
-}
-
-.counter.score span{
-    width: 100%;
-    display: block;
-    height: 100%;
-    text-align: right;
-    font-size: 18px;
-    float: right;
-    position: relative;
-    top: -22px;
-}
-
-.counter.score .icon {
-    margin: -4px 0px;
-}
-
-
-.health::-webkit-progress-value {
-    background: url("../assets/block.png") repeat-x;
-    background-size: contain;
-}
-
-progress::-webkit-progress-bar {
-    background-color: #000;
-    border-radius: 2px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;
-}
-
-.narrator {
-    position: absolute;
-    height: 128px;
-    z-index: 20;
-    background: #000000;
-    border: 2px solid white;
-    color: white;
-    box-shadow: #000 2px 2px 0px 0px, #000 -2px 2px 0px 0px, #000 2px -2px 0px 0px, #000 -2px -2px 0px 0px;
-    padding: 8px;
-}
-
-@media screen and (orientation:landscape) {
-    body {
-        display: flex;
-        align-items: center;
-        flex-direction: row;
-        flex-wrap: wrap;
-        align-content: space-between;
-    }
-}
-
-
-#loading {
-    position: absolute;
-    width: 448px;
-    height: 448px;
-    background-color: #000000b0;
-    float: left;
-    top: 0px;
-    left: 0px;
-    z-index: 99;
-    color: white;
-    padding:0;
-    margin:0;
-}
-
-#loading .loadinggear {
-    background: url("../assets/loading.png") no-repeat;
-    background-size: 258px 258px;
-    animation: rotate infinite 2s linear;
-    position: absolute;
-    width: 256px;
-    height: 256px;
-    aspect-ratio: 1 / 1;
-    top: calc(50% - 128px);
-    left: calc(50% - 128px);
-    float: left;
-    image-rendering: pixelated;
-}
-
-#loading .loadingtext {
-    position: absolute;
-    top: calc(50% + 64px);
-    left: calc(50% + 32px);
-    font-size: 32px;
-    text-shadow: #000 1px 1px 0px, #000 -1px 1px 0px, #000 1px -1px 0px, #000 -1px -1px 0px;
-    font-family:Arial, Helvetica, sans-serif;
-}
-
-@keyframes rotate {
-    0% {
-        transform: rotate(0deg);
-    }
-    100%{
-        transform: rotate(360deg);
-    }
-}
-
-stairs {
-    background: url("../assets/stairs.png");
-    height: 64px;
-    width: 64px;
-    display: block;
-    background-size: contain;
-    position: relative;
-    top: 0px;
-    left: 0px;
-    z-index: 4;
-}
-
-/* Enemy Sprites */
-
-.bat {
-    background: url("../assets/enemies/bat/down.gif");
-    image-rendering: pixelated;
-}
-
-.rat {
-    background: url("../assets/enemies/rat/left.gif");
-    image-rendering: pixelated;
-}
-.rat.left {
-    background: url("../assets/enemies/rat/left.gif");
-}
-.rat.right {
-    background: url("../assets/enemies/rat/right.gif");
-}
-
-.slime {
-    background: url("../assets/enemies/slime/left.gif");
-    image-rendering: pixelated;
-}
-.slime.left {
-    background: url("../assets/enemies/slime/left.gif");
-}
-.slime.right {
-    background: url("../assets/enemies/slime/left.gif");
-    transform: rotateY(180deg);
 }

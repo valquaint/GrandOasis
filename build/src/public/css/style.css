@@ -314,6 +314,17 @@ progress::-webkit-progress-bar {
     }
 }
 
+stairs {
+    background: url("../assets/stairs.png");
+    height: 64px;
+    width: 64px;
+    display: block;
+    background-size: contain;
+    position: relative;
+    top: 0px;
+    left: 0px;
+    z-index: 4;
+}
 
 /* Enemy Sprites */
 

@@ -12,7 +12,7 @@ let StatPanel: Statpanel;
 let ScorePanel: Statitem;
 let Score: number = 0;
 let Health: Statitem;
-let Floor: number = 6;
+let Floor: number = 0;
 let ItemPanel: Statitem;
 let FloorPanel: Statitem;
 let DamagePanel: Statitem;
@@ -132,7 +132,7 @@ async function Generate(map: string) {
     await clearMap();
     MAP = new GameMap(columns, rows, map, DIRECTIONS);
     await MAP.processMaze(columns, rows);
-    // TODO: Create placeExit(), placeKey(), and placeChests()
+    // TODO: Create placeChests()
     await MAP.testwfc(placePlayer);
 }
 
@@ -155,13 +155,16 @@ async function placeExit() {
         if (dir.y === -1) dir.name = "up"
         return { dist: dist, dir: dir };
     }
-    let exit: number[] = await MAP.findOpenCell();
+    let exitLoc: number[] = await MAP.findOpenCell();
     let attempts:number = 0;
-    while(getDistance(PLAYER,exit[0], exit[1]).dist < (5 - Math.floor(attempts / 50))){
-        exit = await MAP.findOpenCell();
+    while(getDistance(PLAYER,exitLoc[0], exitLoc[1]).dist < (5 - Math.floor(attempts / 50))){
+        exitLoc = await MAP.findOpenCell();
         attempts ++;
     }
-    console.log(`I should place the exit on ${exit[0]}, ${exit[1]} (${attempts} attempts taken)`);
+    console.log(`I should place the exit on ${exitLoc[0]}, ${exitLoc[1]} (${attempts} attempts taken)`);
+    const Exit:Stairs = new Stairs()
+    const exitCell = MAP.getCell(exitLoc[0], exitLoc[1])
+    exitCell.Enter(Exit);
 }
 
 async function placeEnemies(){

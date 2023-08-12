@@ -270,15 +270,15 @@ async function placeEnemies() {
             ScorePanel.update(Score);
             delete Enemies[locEnemy];
             Enemies.splice(locEnemy, 1);
-            if (!skip)
+            if (!skip) {
                 PLAYER.hp_max += 1;
-            if (currEnemy.name === "Luna") {
-                if (!skip)
+                PLAYER.hp += 1;
+                if (currEnemy.name === "Luna") {
                     Narrate(`Luna had fun playing with you, but got scared. She ran away instead. (Max HP + 1 anyway though, for her cuteness as a bat dog!)`);
-            }
-            else {
-                if (!skip)
+                }
+                else {
                     Narrate(`You slay the ${currEnemy.name}! Max HP + 1`);
+                }
             }
         };
         currEnemy.onDeath = eOnDeath;
@@ -300,17 +300,16 @@ async function placeEnemies() {
             const currCell = MAP.getCell(Enemies[locEnemy].x, Enemies[locEnemy].y);
             console.log(`Calling DEATH EXIT from ${Enemies[locEnemy].name} function`);
             await currCell.Exit(Enemies[locEnemy]);
-            if (!skip)
+            if (!skip) {
                 Score += Enemies[locEnemy].scoreValue;
-            if (!skip)
                 console.log(`Boss ${Enemies[locEnemy].name} was slain`);
-            ScorePanel.update(Score);
-            delete Enemies[locEnemy];
-            Enemies.splice(locEnemy, 1);
-            if (!skip)
+                ScorePanel.update(Score);
+                delete Enemies[locEnemy];
+                Enemies.splice(locEnemy, 1);
                 PLAYER.hp_max += 5;
-            if (!skip)
+                PLAYER.hp += 5;
                 Narrate(`You defeat ${currEnemy.name}! Max HP + 5`);
+            }
         };
         currEnemy.onDeath = eOnDeath;
         currEnemy.element.classList.add(eSelector);

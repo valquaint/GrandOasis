@@ -351,6 +351,15 @@ async function placePlayer() {
         await placeChest(chestLoc[0], chestLoc[1], new Item(Math.ceil((Floor / 100) * 10)));
         numChests--;
     }
+    if (Floor === 1) {
+        Narrate("Welcome to Grand Oasis! Use WASD/Arrow Keys to move. Bump into enemies to attack, or chests to open them. Touch supported on Mobile. Gamepad also supported. Space/Enter to continue.");
+    }
+    else if (Floor === 2) {
+        Narrate("Weapons only have a set durability. Use them sparingly, and watch out!");
+    }
+    else if (Floor === 3) {
+        Narrate("Can you defeat the four bosses, and make it to floor 100? Good luck!");
+    }
 }
 async function Die(Slayer) {
     PLAYER.movable = false;

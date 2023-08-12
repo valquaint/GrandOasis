@@ -1,14 +1,14 @@
 const ItemTypes = [
     [{ name: "Sword", damage: 1, durability: 4, image: "sword", type: "equipment" }, { name: "Meh Non-crusted Sandwich-Like French Toast", damage: 3, durability: 0, image: "nocrust", type: "healing" }], // Floors 0 - 10
     [{ name: "Bow", damage: 2, durability: 5, image: "bow", type: "equipment" }, { name: "Okay Non-crusted Sandwich-Like French Toast", damage: 5, durability: 0, image: "nocrust", type: "healing" }], // Floors 11 - 20
-    [{ name: "Shield", damage: 1, durability: 4, image: "shield", type: "equipment" }], // Floors 21 - 30
-    [{ name: "Axe", damage: 1, durability: 4, image: "axe", type: "equipment" }], // Floors 31 - 40
-    [{ name: "Mace", damage: 1, durability: 4, image: "mace", type: "equipment" }, { name: "Decent Non-crusted Sandwich-Like French Toast", damage: 7, durability: 0, image: "nocrust", type: "healing" }], // Floors 41 - 50
-    [{ name: "Sword", damage: 1, durability: 4, image: "sword", type: "equipment" }], // Floors 51 - 60
-    [{ name: "Bow", damage: 2, durability: 5, image: "bow", type: "equipment" }, { name: "Better Non-crusted Sandwich-Like French Toast", damage: 10, durability: 0, image: "nocrust", type: "healing" }], // Floors 61 - 70
-    [{ name: "Shield", damage: 1, durability: 4, image: "shield", type: "equipment" }], // Floors 71 - 80
-    [{ name: "Axe", damage: 1, durability: 4, image: "axe", type: "equipment" }, { name: "Well-Made Non-crusted Sandwich-Like French Toast", damage: 20, durability: 0, image: "nocrust", type: "healing" }], // Floors 81 - 90
-    [{ name: "Mace", damage: 1, durability: 4, image: "mace", type: "equipment" }, { name: "Gourmet Non-crusted Sandwich-Like French Toast", damage: 30, durability: 0, image: "nocrust", type: "healing" }], // Floors 91 - 100
+    [{ name: "Shield", damage: 1, durability: 7, image: "shield", type: "equipment" }], // Floors 21 - 30
+    [{ name: "Axe", damage: 3, durability: 3, image: "axe", type: "equipment" }], // Floors 31 - 40
+    [{ name: "Mace", damage: 3, durability: 5, image: "mace", type: "equipment" }, { name: "Decent Non-crusted Sandwich-Like French Toast", damage: 7, durability: 0, image: "nocrust", type: "healing" }], // Floors 41 - 50
+    [{ name: "Bastard Sword", damage: 4, durability: 4, image: "sword", type: "equipment" }], // Floors 51 - 60
+    [{ name: "Compound Bow", damage: 5, durability: 5, image: "bow", type: "equipment" }, { name: "Better Non-crusted Sandwich-Like French Toast", damage: 10, durability: 0, image: "nocrust", type: "healing" }], // Floors 61 - 70
+    [{ name: "Knightly Shield", damage: 2, durability: 8, image: "shield", type: "equipment" }], // Floors 71 - 80
+    [{ name: "Mighty Axe", damage: 8, durability: 4, image: "axe", type: "equipment" }, { name: "Well-Made Non-crusted Sandwich-Like French Toast", damage: 20, durability: 0, image: "nocrust", type: "healing" }], // Floors 81 - 90
+    [{ name: "Morning Star", damage: 10, durability: 6, image: "mace", type: "equipment" }, { name: "Gourmet Non-crusted Sandwich-Like French Toast", damage: 30, durability: 0, image: "nocrust", type: "healing" }], // Floors 91 - 100
 ]
 
 class Item {

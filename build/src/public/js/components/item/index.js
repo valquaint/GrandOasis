@@ -2,14 +2,14 @@
 const ItemTypes = [
     [{ name: "Sword", damage: 1, durability: 4, image: "sword", type: "equipment" }, { name: "Meh Non-crusted Sandwich-Like French Toast", damage: 3, durability: 0, image: "nocrust", type: "healing" }],
     [{ name: "Bow", damage: 2, durability: 5, image: "bow", type: "equipment" }, { name: "Okay Non-crusted Sandwich-Like French Toast", damage: 5, durability: 0, image: "nocrust", type: "healing" }],
-    [{ name: "Shield", damage: 1, durability: 4, image: "shield", type: "equipment" }],
-    [{ name: "Axe", damage: 1, durability: 4, image: "axe", type: "equipment" }],
-    [{ name: "Mace", damage: 1, durability: 4, image: "mace", type: "equipment" }, { name: "Decent Non-crusted Sandwich-Like French Toast", damage: 7, durability: 0, image: "nocrust", type: "healing" }],
-    [{ name: "Sword", damage: 1, durability: 4, image: "sword", type: "equipment" }],
-    [{ name: "Bow", damage: 2, durability: 5, image: "bow", type: "equipment" }, { name: "Better Non-crusted Sandwich-Like French Toast", damage: 10, durability: 0, image: "nocrust", type: "healing" }],
-    [{ name: "Shield", damage: 1, durability: 4, image: "shield", type: "equipment" }],
-    [{ name: "Axe", damage: 1, durability: 4, image: "axe", type: "equipment" }, { name: "Well-Made Non-crusted Sandwich-Like French Toast", damage: 20, durability: 0, image: "nocrust", type: "healing" }],
-    [{ name: "Mace", damage: 1, durability: 4, image: "mace", type: "equipment" }, { name: "Gourmet Non-crusted Sandwich-Like French Toast", damage: 30, durability: 0, image: "nocrust", type: "healing" }], // Floors 91 - 100
+    [{ name: "Shield", damage: 1, durability: 7, image: "shield", type: "equipment" }],
+    [{ name: "Axe", damage: 3, durability: 3, image: "axe", type: "equipment" }],
+    [{ name: "Mace", damage: 3, durability: 5, image: "mace", type: "equipment" }, { name: "Decent Non-crusted Sandwich-Like French Toast", damage: 7, durability: 0, image: "nocrust", type: "healing" }],
+    [{ name: "Bastard Sword", damage: 4, durability: 4, image: "sword", type: "equipment" }],
+    [{ name: "Compound Bow", damage: 5, durability: 5, image: "bow", type: "equipment" }, { name: "Better Non-crusted Sandwich-Like French Toast", damage: 10, durability: 0, image: "nocrust", type: "healing" }],
+    [{ name: "Knightly Shield", damage: 2, durability: 8, image: "shield", type: "equipment" }],
+    [{ name: "Mighty Axe", damage: 8, durability: 4, image: "axe", type: "equipment" }, { name: "Well-Made Non-crusted Sandwich-Like French Toast", damage: 20, durability: 0, image: "nocrust", type: "healing" }],
+    [{ name: "Morning Star", damage: 10, durability: 6, image: "mace", type: "equipment" }, { name: "Gourmet Non-crusted Sandwich-Like French Toast", damage: 30, durability: 0, image: "nocrust", type: "healing" }], // Floors 91 - 100
 ];
 class Item {
     damage;

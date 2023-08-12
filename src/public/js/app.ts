@@ -17,7 +17,8 @@ let ItemPanel: Statitem;
 let FloorPanel: Statitem;
 let DamagePanel: Statitem;
 let FloorTypes: string[] = ["cave", "forest", "forest2"];
-let Equipped:Item | null = null;
+let Equipped: Item | null = null;
+
 const DIRECTIONS: Direction[] = [ // UP/DOWN/LEFT/RIGHT
     {
         x: 0,
@@ -95,16 +96,16 @@ async function ready() {
     StatPanel.element.appendChild(FloorPanel.element);
 }
 
-async function createMobileControls(){
-    const mobileControls:HTMLElement = document.createElement("div");
+async function createMobileControls() {
+    const mobileControls: HTMLElement = document.createElement("div");
     mobileControls.classList.add("mobileControls");
     document.body.appendChild(mobileControls);
 
-    const downButton:HTMLElement = document.createElement("button");
+    const downButton: HTMLElement = document.createElement("button");
     downButton.classList.add("down");
     const dArrow = document.createElement("span");
     downButton.appendChild(dArrow);
-    downButton.addEventListener("click", async () =>{
+    downButton.addEventListener("click", async () => {
         let didMove: boolean = false;
         didMove = await move(1);
         if (didMove) {
@@ -114,14 +115,14 @@ async function createMobileControls(){
             }
 
         }
-    } )
+    })
     mobileControls.appendChild(downButton);
-    
-    const upButton:HTMLElement = document.createElement("button");
+
+    const upButton: HTMLElement = document.createElement("button");
     upButton.classList.add("up")
     const uArrow = document.createElement("span");
     upButton.appendChild(uArrow);
-    upButton.addEventListener("click", async () =>{
+    upButton.addEventListener("click", async () => {
         let didMove: boolean = false;
         didMove = await move(0);
         if (didMove) {
@@ -131,10 +132,10 @@ async function createMobileControls(){
             }
 
         }
-    } )
+    })
     mobileControls.appendChild(upButton);
-    
-    const leftButton:HTMLElement = document.createElement("button");
+
+    const leftButton: HTMLElement = document.createElement("button");
     leftButton.classList.add("left")
     const lArrow = document.createElement("span");
     leftButton.appendChild(lArrow);
@@ -148,14 +149,14 @@ async function createMobileControls(){
             }
 
         }
-    } )
+    })
     mobileControls.appendChild(leftButton);
-    
-    const rightButton:HTMLElement = document.createElement("button");
+
+    const rightButton: HTMLElement = document.createElement("button");
     rightButton.classList.add("right");
     const rArrow = document.createElement("span");
     rightButton.appendChild(rArrow);
-    rightButton.addEventListener("click", async () =>{
+    rightButton.addEventListener("click", async () => {
         let didMove: boolean = false;
         didMove = await move(3);
         if (didMove) {
@@ -165,15 +166,22 @@ async function createMobileControls(){
             }
 
         }
-    } )
+    })
     mobileControls.appendChild(rightButton);
 
-    const confirmButton:HTMLElement = document.createElement("button");
+    const confirmButton: HTMLElement = document.createElement("button");
     confirmButton.classList.add("confirm");
     confirmButton.addEventListener("click", async () => {
         if (narrator.onScreen) {
             console.log("Closing Narrator");
             narrator.clear();
+
+            if (PLAYER.hp <= 0) {
+                window.location.reload();
+            }
+            if (Floor === 1337) {
+                window.location.href = "https://www.youtube.com/watch?v=oyFQVZ2h0V8";
+            }
         }
     })
     mobileControls.appendChild(confirmButton);
@@ -191,6 +199,9 @@ async function GameLoop() {
         columns = 10 + Math.floor((Floor / 100) * 10);
         console.log(`I will generate a ${columns} x ${rows} ${mapgen} map`)
         await Generate(mapgen);
+    } else {
+        Floor = 1337;
+        Narrate(`And thus, your journey came to an end, having defeated all 100 floors in the Grand Oasis... [Final Score: ${Score}]`)
     }
 }
 
@@ -224,7 +235,7 @@ async function Generate(map: string) {
 }
 
 async function placeExit() {
-    const getDistance = (trg: Entity, x:number, y:number) => {
+    const getDistance = (trg: Entity, x: number, y: number) => {
         const distX = (x - trg.x)
         const distY = (y - trg.y)
         const dist = Math.ceil(Math.hypot(distX + distY));
@@ -243,40 +254,40 @@ async function placeExit() {
         return { dist: dist, dir: dir };
     }
     let exitLoc: number[] = await MAP.findOpenCell();
-    let attempts:number = 0;
-    while(getDistance(PLAYER,exitLoc[0], exitLoc[1]).dist < (5 - Math.floor(attempts / 50))){
+    let attempts: number = 0;
+    while (getDistance(PLAYER, exitLoc[0], exitLoc[1]).dist < (5 - Math.floor(attempts / 50))) {
         exitLoc = await MAP.findOpenCell();
-        attempts ++;
+        attempts++;
     }
     console.log(`I should place the exit on ${exitLoc[0]}, ${exitLoc[1]} (${attempts} attempts taken)`);
-    const Exit:Stairs = new Stairs()
+    const Exit: Stairs = new Stairs()
     const exitCell = MAP.getCell(exitLoc[0], exitLoc[1])
     exitCell.Enter(Exit);
 }
 
-async function placeEnemies(){
+async function placeEnemies() {
     let numEnemies = Math.ceil(Math.random() * Floor);
     console.log(`Placing ${numEnemies} enemies`)
-    while(numEnemies){
+    while (numEnemies) {
         const testEnemyLoc: number[] = await MAP.findOpenCell();
         const eSelector = `F${Floor}-${numEnemies}`
-        const currEnemy = new Enemy(Math.ceil((Floor / 100) * 10), testEnemyLoc[0], testEnemyLoc[1],()=>null, PLAYER)
-        const eOnDeath = async (skip:boolean) => {
+        const currEnemy = new Enemy(Math.ceil((Floor / 100) * 10), testEnemyLoc[0], testEnemyLoc[1], () => null, PLAYER)
+        const eOnDeath = async (source: Entity | null, skip: boolean) => {
             document.querySelector(`.enemy.${eSelector}`)?.remove();
             const locEnemy = Enemies.indexOf(currEnemy);
             const currCell = MAP.getCell(Enemies[locEnemy].x, Enemies[locEnemy].y);
             console.log(`Calling DEATH EXIT from ${Enemies[locEnemy].name} function`)
             await currCell.Exit(Enemies[locEnemy]);
-            if(!skip) Score += Enemies[locEnemy].scoreValue;
-            if(!skip) console.log(`Enemy ${Enemies[locEnemy].name} was slain`)
+            if (!skip) Score += Enemies[locEnemy].scoreValue;
+            if (!skip) console.log(`Enemy ${Enemies[locEnemy].name} was slain`)
             ScorePanel.update(Score);
             delete Enemies[locEnemy];
             Enemies.splice(locEnemy, 1);
-            if(!skip) PLAYER.hp_max += 1;
-            if(currEnemy.name === "Luna"){
-                if(!skip) Narrate(`Luna had fun playing with you, but got scared. She ran away instead. (Max HP + 1 anyway though, for her cuteness as a bat dog!)`);
-            }else{
-                if(!skip) Narrate(`You slay the ${currEnemy.name}! Max HP + 1`);
+            if (!skip) PLAYER.hp_max += 1;
+            if (currEnemy.name === "Luna") {
+                if (!skip) Narrate(`Luna had fun playing with you, but got scared. She ran away instead. (Max HP + 1 anyway though, for her cuteness as a bat dog!)`);
+            } else {
+                if (!skip) Narrate(`You slay the ${currEnemy.name}! Max HP + 1`);
             }
         }
         currEnemy.onDeath = eOnDeath;
@@ -285,27 +296,27 @@ async function placeEnemies(){
         console.log(`Placing enemy ${currEnemy.name} to start at ${testEnemyLoc[0]}, ${testEnemyLoc[1]}`)
         const enemyCell = MAP.getCell(testEnemyLoc[0], testEnemyLoc[1]);
         await enemyCell.Enter(currEnemy);
-        numEnemies --;
+        numEnemies--;
     }
-    if(Floor % 25 === 0){
+    if (Floor % 25 === 0) {
         Narrate(`You feel a powerful presence on this floor... `);
         const testEnemyLoc: number[] = await MAP.findOpenCell();
         const eSelector = `F${Floor}-${numEnemies}`
-        const currEnemy = new Boss(Math.floor(Floor / 25)-1, testEnemyLoc[0], testEnemyLoc[1],()=>null, PLAYER)
-        const eOnDeath = async (skip:boolean) => {
+        const currEnemy = new Boss(Math.floor(Floor / 25) - 1, testEnemyLoc[0], testEnemyLoc[1], () => null, PLAYER)
+        const eOnDeath = async (source: Entity | null, skip: boolean) => {
             document.querySelector(`.enemy.${eSelector}`)?.remove();
             const locEnemy = Enemies.indexOf(currEnemy);
             const currCell = MAP.getCell(Enemies[locEnemy].x, Enemies[locEnemy].y);
             console.log(`Calling DEATH EXIT from ${Enemies[locEnemy].name} function`)
             await currCell.Exit(Enemies[locEnemy]);
-            if(!skip) Score += Enemies[locEnemy].scoreValue;
-            if(!skip) console.log(`Boss ${Enemies[locEnemy].name} was slain`)
+            if (!skip) Score += Enemies[locEnemy].scoreValue;
+            if (!skip) console.log(`Boss ${Enemies[locEnemy].name} was slain`)
             ScorePanel.update(Score);
             delete Enemies[locEnemy];
             Enemies.splice(locEnemy, 1);
-            if(!skip) PLAYER.hp_max += 5;
-            if(!skip) Narrate(`You defeat ${currEnemy.name}! Max HP + 5`);
-            
+            if (!skip) PLAYER.hp_max += 5;
+            if (!skip) Narrate(`You defeat ${currEnemy.name}! Max HP + 5`);
+
         }
         currEnemy.onDeath = eOnDeath;
         currEnemy.element.classList.add(eSelector);
@@ -319,7 +330,7 @@ async function placeEnemies(){
 async function placePlayer() {
     const start: number[] = await MAP.findOpenCell();
     if (!PLAYER?.name) {
-        PLAYER = new Entity("Player", [10, 10], 1, start[0], start[1], ["player"]);
+        PLAYER = new Entity("Player", [10, 10], 1, start[0], start[1], ["player"], Die);
         console.log(`Placing player to start at ${start[0]}, ${start[1]}`)
         const startCell = MAP.getCell(start[0], start[1]);
         await startCell.Enter(PLAYER);
@@ -343,11 +354,26 @@ async function placePlayer() {
     await placeExit();
     let numChests = Math.ceil(Math.random() * Math.ceil(Floor / 10));
     console.log(`======== PLACING ${numChests} CHEST ========`)
-    while(numChests){
+    while (numChests) {
         const chestLoc: number[] = await MAP.findOpenCell();
         await placeChest(chestLoc[0], chestLoc[1], new Item(Math.ceil((Floor / 100) * 10)))
-        numChests --;
+        numChests--;
     }
+}
+
+async function Die(Slayer: Entity | null) {
+    PLAYER.movable = false;
+    const deathSplash = document.createElement("div");
+    deathSplash.classList.add("deathsplash");
+    document.body.appendChild(deathSplash);
+    const deathText = document.createElement("div");
+    deathText.classList.add("deathText");
+    setTimeout(async () => {
+        deathSplash.appendChild(deathText);
+        setTimeout(async () => {
+            await Narrate(`Alas, struck down by ${Slayer?.name || "Unknown"}, your journey came to an end on floor ${Floor} [Final Score: ${Score}]. -- Play again?`)
+        }, 2000)
+    }, 2000);
 }
 
 async function RegisterHotkeys() {
@@ -424,6 +450,12 @@ async function gamepadHandler(event: GamepadEvent, connected: boolean) {
                         if (narrator.onScreen) {
                             console.log("Closing Narrator");
                             narrator.clear();
+                            if (PLAYER.hp <= 0) {
+                                window.location.reload();
+                            }
+                            if (Floor === 1337) {
+                                window.location.href = "https://www.youtube.com/watch?v=oyFQVZ2h0V8";
+                            }
                         }
                     }
                     if (didMove) {
@@ -478,6 +510,12 @@ async function keyDown(event: KeyboardEvent) {
             if (narrator.onScreen) {
                 console.log("Closing Narrator");
                 narrator.clear();
+                if (PLAYER.hp <= 0) {
+                    window.location.reload();
+                }
+                if (Floor === 1337) {
+                    window.location.href = "https://www.youtube.com/watch?v=oyFQVZ2h0V8";
+                }
             }
             break;
         case "o":
@@ -510,20 +548,20 @@ function move(direction: number): Promise<boolean> {
 
 }
 
-async function testHealingItem(){
-    const testItem:Item = new Item("Non-crusted Sandwich-Like French Toast", 5, 0, "nocrust", "healing");
+async function testHealingItem() {
+    const testItem: Item = new Item("Non-crusted Sandwich-Like French Toast", 5, 0, "nocrust", "healing");
     testItem.use(PLAYER);
     Health.update(Math.floor(100 * (PLAYER.hp / PLAYER.hp_max)));
 }
 
-async function placeChest(x:number, y:number, item:Item){
+async function placeChest(x: number, y: number, item: Item) {
     const chest = new Chest(item, x, y);
     const locCell = MAP.getCell(x, y);
     locCell.Enter(chest)
     return true;
 }
 
-async function Narrate(text: string, element?:HTMLElement) {
+async function Narrate(text: string, element?: HTMLElement) {
     narrator.explain(text, 7, 7, element);
 }
 

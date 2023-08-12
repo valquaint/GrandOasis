@@ -43,7 +43,7 @@ class Entity {
                         Equipped.Degrade(source);
                     if (this.hp <= 0) {
                         if (this.onDeath !== undefined)
-                            await this.onDeath();
+                            await this.onDeath(source);
                         resolve(true);
                     }
                 }
@@ -132,7 +132,7 @@ class Entity {
         }
     }
     get canMove() {
-        return this.movable;
+        return this.movable && this.hp > 0;
     }
     set canMove(v) {
         this.canMove = v;

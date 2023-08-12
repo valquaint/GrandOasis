@@ -10,7 +10,7 @@ class Stairs {
         return new Promise(async (resolve) => {
             if (source.hp_max !== 0) {
                 for (const Enemy of Enemies) {
-                    await Enemy.onDeath(true);
+                    await Enemy.onDeath(null, true);
                 }
                 GameLoop();
                 resolve(true);

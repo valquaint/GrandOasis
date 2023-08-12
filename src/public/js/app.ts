@@ -17,6 +17,7 @@ let ItemPanel: Statitem;
 let FloorPanel: Statitem;
 let DamagePanel: Statitem;
 let FloorTypes: string[] = ["cave", "forest", "forest2"];
+let Equipped:Item | null = null;
 const DIRECTIONS: Direction[] = [ // UP/DOWN/LEFT/RIGHT
     {
         x: 0,
@@ -260,17 +261,23 @@ async function placeEnemies(){
         const testEnemyLoc: number[] = await MAP.findOpenCell();
         const eSelector = `F${Floor}-${numEnemies}`
         const currEnemy = new Enemy(Math.ceil((Floor / 100) * 10), testEnemyLoc[0], testEnemyLoc[1],()=>null, PLAYER)
-        const eOnDeath = async () => {
+        const eOnDeath = async (skip:boolean) => {
             document.querySelector(`.enemy.${eSelector}`)?.remove();
             const locEnemy = Enemies.indexOf(currEnemy);
             const currCell = MAP.getCell(Enemies[locEnemy].x, Enemies[locEnemy].y);
             console.log(`Calling DEATH EXIT from ${Enemies[locEnemy].name} function`)
             await currCell.Exit(Enemies[locEnemy]);
-            Score += Enemies[locEnemy].scoreValue;
-            console.log(`Enemy ${Enemies[locEnemy].name} was slain`)
+            if(!skip) Score += Enemies[locEnemy].scoreValue;
+            if(!skip) console.log(`Enemy ${Enemies[locEnemy].name} was slain`)
             ScorePanel.update(Score);
             delete Enemies[locEnemy];
             Enemies.splice(locEnemy, 1);
+            if(!skip) PLAYER.hp_max += 1;
+            if(currEnemy.name === "Luna"){
+                if(!skip) Narrate(`Luna had fun playing with you, but got scared. She ran away instead. (Max HP + 1 anyway though, for her cuteness as a bat dog!)`);
+            }else{
+                if(!skip) Narrate(`You slay the ${currEnemy.name}! Max HP + 1`);
+            }
         }
         currEnemy.onDeath = eOnDeath;
         currEnemy.element.classList.add(eSelector);
@@ -279,6 +286,33 @@ async function placeEnemies(){
         const enemyCell = MAP.getCell(testEnemyLoc[0], testEnemyLoc[1]);
         await enemyCell.Enter(currEnemy);
         numEnemies --;
+    }
+    if(Floor % 25 === 0){
+        Narrate(`You feel a powerful presence on this floor... `);
+        const testEnemyLoc: number[] = await MAP.findOpenCell();
+        const eSelector = `F${Floor}-${numEnemies}`
+        const currEnemy = new Boss(Math.floor(Floor / 25)-1, testEnemyLoc[0], testEnemyLoc[1],()=>null, PLAYER)
+        const eOnDeath = async (skip:boolean) => {
+            document.querySelector(`.enemy.${eSelector}`)?.remove();
+            const locEnemy = Enemies.indexOf(currEnemy);
+            const currCell = MAP.getCell(Enemies[locEnemy].x, Enemies[locEnemy].y);
+            console.log(`Calling DEATH EXIT from ${Enemies[locEnemy].name} function`)
+            await currCell.Exit(Enemies[locEnemy]);
+            if(!skip) Score += Enemies[locEnemy].scoreValue;
+            if(!skip) console.log(`Boss ${Enemies[locEnemy].name} was slain`)
+            ScorePanel.update(Score);
+            delete Enemies[locEnemy];
+            Enemies.splice(locEnemy, 1);
+            if(!skip) PLAYER.hp_max += 5;
+            if(!skip) Narrate(`You defeat ${currEnemy.name}! Max HP + 5`);
+            
+        }
+        currEnemy.onDeath = eOnDeath;
+        currEnemy.element.classList.add(eSelector);
+        Enemies.push(currEnemy);
+        console.log(`Placing Boss ${currEnemy.name} to start at ${testEnemyLoc[0]}, ${testEnemyLoc[1]}`)
+        const enemyCell = MAP.getCell(testEnemyLoc[0], testEnemyLoc[1]);
+        await enemyCell.Enter(currEnemy);
     }
 }
 
@@ -307,6 +341,13 @@ async function placePlayer() {
     ScorePanel.update(Score);
     Health.update(Math.floor(100 * (PLAYER.hp / PLAYER.hp_max)));
     await placeExit();
+    let numChests = Math.ceil(Math.random() * Math.ceil(Floor / 10));
+    console.log(`======== PLACING ${numChests} CHEST ========`)
+    while(numChests){
+        const chestLoc: number[] = await MAP.findOpenCell();
+        await placeChest(chestLoc[0], chestLoc[1], new Item(Math.ceil((Floor / 100) * 10)))
+        numChests --;
+    }
 }
 
 async function RegisterHotkeys() {
@@ -469,8 +510,21 @@ function move(direction: number): Promise<boolean> {
 
 }
 
-async function Narrate(text: string) {
-    narrator.explain(text, 7, 7);
+async function testHealingItem(){
+    const testItem:Item = new Item("Non-crusted Sandwich-Like French Toast", 5, 0, "nocrust", "healing");
+    testItem.use(PLAYER);
+    Health.update(Math.floor(100 * (PLAYER.hp / PLAYER.hp_max)));
+}
+
+async function placeChest(x:number, y:number, item:Item){
+    const chest = new Chest(item, x, y);
+    const locCell = MAP.getCell(x, y);
+    locCell.Enter(chest)
+    return true;
+}
+
+async function Narrate(text: string, element?:HTMLElement) {
+    narrator.explain(text, 7, 7, element);
 }
 
 document.addEventListener("DOMContentLoaded", ready);

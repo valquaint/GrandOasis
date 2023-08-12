@@ -70,9 +70,16 @@ class Statitem {
             case "image":
                 switch (typeof value) {
                     case "string":
-                        const img = new Image();
-                        img.src = `assets/${value}.png`;
-                        this.counter = img;
+                        const oldHeld = this.element.querySelector(".held");
+                        if (oldHeld)
+                            oldHeld.remove();
+                        if (value !== "") {
+                            const img = new Image();
+                            img.src = `assets/${value}.png`;
+                            this.counter = img;
+                            this.counter.classList.add("held");
+                            this.element.prepend(this.counter);
+                        }
                         break;
                     case "number":
                         if (!this.counter || this.counter.tagName.toLowerCase() === "img") {

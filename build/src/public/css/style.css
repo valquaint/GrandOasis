@@ -42,10 +42,7 @@ viewport {
 
 .cell {
     background-color: #000;
-}
-
-.visited {
-    /* border: 2px solid #0f0; */
+    max-height: 64px;
 }
 
 .floor {
@@ -198,6 +195,35 @@ stat .damagecounter.image {
     object-fit: contain;
     width: 32px;
     margin: 2px;
+}
+
+.held {
+    position: absolute;
+    width: 24px;
+    top: 7px;
+    left: 6px;
+}
+
+.itemDisplay{
+    height: 64px;
+    image-rendering: pixelated;
+    width: 64px;
+
+}
+
+.chest {
+    background: url("../assets/chest.png");
+    width: 64px;
+    height: 64px;
+    z-index: 7;
+    position: relative;
+    left: 0px;
+    float: inherit;
+    top: 0px;
+}
+
+.chest.open {
+    background: url("../assets/chest_open.png");
 }
 
 span.value {
@@ -363,6 +389,218 @@ stairs {
 
 .slime.right {
     background: url("../assets/enemies/slime/left.gif");
+    transform: rotateY(180deg);
+}
+
+.snake {
+    background: url("../assets/enemies/snake/left.gif");
+    image-rendering: pixelated;
+}
+
+.snake.left {
+    background: url("../assets/enemies/snake/left.gif");
+}
+
+.snake.right {
+    background: url("../assets/enemies/snake/left.gif");
+    transform: rotateY(180deg);
+}
+
+.wolf {
+    background: url("../assets/enemies/wolf/left.gif");
+    image-rendering: pixelated;
+}
+
+.wolf.left {
+    background: url("../assets/enemies/wolf/left.gif");
+}
+
+.wolf.right {
+    background: url("../assets/enemies/wolf/left.gif");
+    transform: rotateY(180deg);
+}
+
+.bear {
+    background: url("../assets/enemies/bear/left.gif");
+    image-rendering: pixelated;
+}
+
+.bear.left {
+    background: url("../assets/enemies/bear/left.gif");
+}
+
+.bear.right {
+    background: url("../assets/enemies/bear/left.gif");
+    transform: rotateY(180deg);
+}
+
+.bear.up {
+    background: url("../assets/enemies/bear/up.gif");
+}
+
+.bear.down {
+    background: url("../assets/enemies/bear/down.gif");
+    transform: rotateY(180deg);
+}
+
+.skeleton {
+    background: url("../assets/enemies/skeleton/left.gif");
+    image-rendering: pixelated;
+}
+
+.skeleton.left {
+    background: url("../assets/enemies/skeleton/left.gif");
+}
+
+.skeleton.right {
+    background: url("../assets/enemies/skeleton/left.gif");
+    transform: rotateY(180deg);
+}
+
+.skeleton.up {
+    background: url("../assets/enemies/skeleton/up.gif");
+}
+
+.skeleton.down {
+    background: url("../assets/enemies/skeleton/down.gif");
+    transform: rotateY(180deg);
+}
+
+.luna {
+    background: url("../assets/enemies/luna/left.gif");
+    image-rendering: pixelated;
+}
+
+.luna.left {
+    background: url("../assets/enemies/luna/left.gif");
+}
+
+.luna.right {
+    background: url("../assets/enemies/luna/left.gif");
+    transform: rotateY(180deg);
+}
+
+.luna.up {
+    background: url("../assets/enemies/luna/up.gif");
+}
+
+.luna.down {
+    background: url("../assets/enemies/luna/down.gif");
+    transform: rotateY(180deg);
+}
+
+.wraith {
+    background: url("../assets/enemies/wraith/left.gif");
+    image-rendering: pixelated;
+}
+
+.wraith.left {
+    background: url("../assets/enemies/wraith/left.gif");
+}
+
+.wraith.right {
+    background: url("../assets/enemies/wraith/left.gif");
+    transform: rotateY(180deg);
+}
+
+.wraith.up {
+    background: url("../assets/enemies/wraith/up.gif");
+}
+
+.wraith.down {
+    background: url("../assets/enemies/wraith/down.gif");
+    transform: rotateY(180deg);
+}
+
+.demon {
+    background: url("../assets/enemies/boss/demon/left.gif");
+    image-rendering: pixelated;
+}
+
+.demon.left {
+    background: url("../assets/enemies/boss/demon/left.gif");
+}
+
+.demon.right {
+    background: url("../assets/enemies/boss/demon/left.gif");
+    transform: rotateY(180deg);
+}
+
+.demon.up {
+    background: url("../assets/enemies/boss/demon/up.gif");
+}
+
+.demon.down {
+    background: url("../assets/enemies/boss/demon/down.gif");
+    transform: rotateY(180deg);
+}
+
+.dragon {
+    background: url("../assets/enemies/boss/dragon/left.gif");
+    image-rendering: pixelated;
+}
+
+.dragon.left {
+    background: url("../assets/enemies/boss/dragon/left.gif");
+}
+
+.dragon.right {
+    background: url("../assets/enemies/boss/dragon/left.gif");
+    transform: rotateY(180deg);
+}
+
+.dragon.up {
+    background: url("../assets/enemies/boss/dragon/up.gif");
+}
+
+.dragon.down {
+    background: url("../assets/enemies/boss/dragon/down.gif");
+    transform: rotateY(180deg);
+}
+
+.robot {
+    background: url("../assets/enemies/boss/robot/left.gif");
+    image-rendering: pixelated;
+}
+
+.robot.left {
+    background: url("../assets/enemies/boss/robot/left.gif");
+}
+
+.robot.right {
+    background: url("../assets/enemies/boss/robot/left.gif");
+    transform: rotateY(180deg);
+}
+
+.robot.up {
+    background: url("../assets/enemies/boss/robot/up.gif");
+}
+
+.robot.down {
+    background: url("../assets/enemies/boss/robot/down.gif");
+    transform: rotateY(180deg);
+}
+
+.stormy {
+    background: url("../assets/enemies/boss/stormy/left.gif");
+    image-rendering: pixelated;
+}
+
+.stormy.left {
+    background: url("../assets/enemies/boss/stormy/left.gif");
+}
+
+.stormy.right {
+    background: url("../assets/enemies/boss/stormy/left.gif");
+    transform: rotateY(180deg);
+}
+
+.stormy.up {
+    background: url("../assets/enemies/boss/stormy/up.gif");
+}
+
+.stormy.down {
+    background: url("../assets/enemies/boss/stormy/down.gif");
     transform: rotateY(180deg);
 }
 

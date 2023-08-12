@@ -17,6 +17,7 @@ let ItemPanel;
 let FloorPanel;
 let DamagePanel;
 let FloorTypes = ["cave", "forest", "forest2"];
+let Equipped = null;
 const DIRECTIONS = [
     {
         x: 0,
@@ -58,6 +59,7 @@ const moveDirections = [
     },
 ];
 async function ready() {
+    document.addEventListener('touchstart', await createMobileControls);
     root = document.querySelector("#root");
     loading = document.querySelector("#loading");
     View = new Viewport(7, 7, ["viewport"]);
@@ -90,6 +92,86 @@ async function ready() {
     StatPanel.element.appendChild(DamagePanel.element);
     StatPanel.element.appendChild(FloorPanel.element);
 }
+async function createMobileControls() {
+    const mobileControls = document.createElement("div");
+    mobileControls.classList.add("mobileControls");
+    document.body.appendChild(mobileControls);
+    const downButton = document.createElement("button");
+    downButton.classList.add("down");
+    const dArrow = document.createElement("span");
+    downButton.appendChild(dArrow);
+    downButton.addEventListener("click", async () => {
+        let didMove = false;
+        didMove = await move(1);
+        if (didMove) {
+            for (const Enemy of Enemies) {
+                await Enemy.wander.call(Enemy);
+                Health.update(Math.floor(100 * (PLAYER.hp / PLAYER.hp_max)));
+            }
+        }
+    });
+    mobileControls.appendChild(downButton);
+    const upButton = document.createElement("button");
+    upButton.classList.add("up");
+    const uArrow = document.createElement("span");
+    upButton.appendChild(uArrow);
+    upButton.addEventListener("click", async () => {
+        let didMove = false;
+        didMove = await move(0);
+        if (didMove) {
+            for (const Enemy of Enemies) {
+                await Enemy.wander.call(Enemy);
+                Health.update(Math.floor(100 * (PLAYER.hp / PLAYER.hp_max)));
+            }
+        }
+    });
+    mobileControls.appendChild(upButton);
+    const leftButton = document.createElement("button");
+    leftButton.classList.add("left");
+    const lArrow = document.createElement("span");
+    leftButton.appendChild(lArrow);
+    leftButton.addEventListener("click", async () => {
+        let didMove = false;
+        didMove = await move(2);
+        if (didMove) {
+            for (const Enemy of Enemies) {
+                await Enemy.wander.call(Enemy);
+                Health.update(Math.floor(100 * (PLAYER.hp / PLAYER.hp_max)));
+            }
+        }
+    });
+    mobileControls.appendChild(leftButton);
+    const rightButton = document.createElement("button");
+    rightButton.classList.add("right");
+    const rArrow = document.createElement("span");
+    rightButton.appendChild(rArrow);
+    rightButton.addEventListener("click", async () => {
+        let didMove = false;
+        didMove = await move(3);
+        if (didMove) {
+            for (const Enemy of Enemies) {
+                await Enemy.wander.call(Enemy);
+                Health.update(Math.floor(100 * (PLAYER.hp / PLAYER.hp_max)));
+            }
+        }
+    });
+    mobileControls.appendChild(rightButton);
+    const confirmButton = document.createElement("button");
+    confirmButton.classList.add("confirm");
+    confirmButton.addEventListener("click", async () => {
+        if (narrator.onScreen) {
+            console.log("Closing Narrator");
+            narrator.clear();
+            if (PLAYER.hp <= 0) {
+                window.location.reload();
+            }
+            if (Floor === 1337) {
+                window.location.href = "https://www.youtube.com/watch?v=oyFQVZ2h0V8";
+            }
+        }
+    });
+    mobileControls.appendChild(confirmButton);
+}
 async function GameLoop() {
     if (Floor < 100) {
         loading.style.display = "block";
@@ -101,6 +183,10 @@ async function GameLoop() {
         columns = 10 + Math.floor((Floor / 100) * 10);
         console.log(`I will generate a ${columns} x ${rows} ${mapgen} map`);
         await Generate(mapgen);
+    }
+    else {
+        Floor = 1337;
+        Narrate(`And thus, your journey came to an end, having defeated all 100 floors in the Grand Oasis... [Final Score: ${Score}]`);
     }
 }
 async function clearMap() {
@@ -171,17 +257,29 @@ async function placeEnemies() {
         const testEnemyLoc = await MAP.findOpenCell();
         const eSelector = `F${Floor}-${numEnemies}`;
         const currEnemy = new Enemy(Math.ceil((Floor / 100) * 10), testEnemyLoc[0], testEnemyLoc[1], () => null, PLAYER);
-        const eOnDeath = async () => {
+        const eOnDeath = async (source, skip) => {
             document.querySelector(`.enemy.${eSelector}`)?.remove();
             const locEnemy = Enemies.indexOf(currEnemy);
             const currCell = MAP.getCell(Enemies[locEnemy].x, Enemies[locEnemy].y);
             console.log(`Calling DEATH EXIT from ${Enemies[locEnemy].name} function`);
             await currCell.Exit(Enemies[locEnemy]);
-            Score += Enemies[locEnemy].scoreValue;
-            console.log(`Enemy ${Enemies[locEnemy].name} was slain`);
+            if (!skip)
+                Score += Enemies[locEnemy].scoreValue;
+            if (!skip)
+                console.log(`Enemy ${Enemies[locEnemy].name} was slain`);
             ScorePanel.update(Score);
             delete Enemies[locEnemy];
             Enemies.splice(locEnemy, 1);
+            if (!skip) {
+                PLAYER.hp_max += 1;
+                PLAYER.hp += 1;
+                if (currEnemy.name === "Luna") {
+                    Narrate(`Luna had fun playing with you, but got scared. She ran away instead. (Max HP + 1 anyway though, for her cuteness as a bat dog!)`);
+                }
+                else {
+                    Narrate(`You slay the ${currEnemy.name}! Max HP + 1`);
+                }
+            }
         };
         currEnemy.onDeath = eOnDeath;
         currEnemy.element.classList.add(eSelector);
@@ -191,11 +289,40 @@ async function placeEnemies() {
         await enemyCell.Enter(currEnemy);
         numEnemies--;
     }
+    if (Floor % 25 === 0) {
+        Narrate(`You feel a powerful presence on this floor... `);
+        const testEnemyLoc = await MAP.findOpenCell();
+        const eSelector = `F${Floor}-${numEnemies}`;
+        const currEnemy = new Boss(Math.floor(Floor / 25) - 1, testEnemyLoc[0], testEnemyLoc[1], () => null, PLAYER);
+        const eOnDeath = async (source, skip) => {
+            document.querySelector(`.enemy.${eSelector}`)?.remove();
+            const locEnemy = Enemies.indexOf(currEnemy);
+            const currCell = MAP.getCell(Enemies[locEnemy].x, Enemies[locEnemy].y);
+            console.log(`Calling DEATH EXIT from ${Enemies[locEnemy].name} function`);
+            await currCell.Exit(Enemies[locEnemy]);
+            if (!skip) {
+                Score += Enemies[locEnemy].scoreValue;
+                console.log(`Boss ${Enemies[locEnemy].name} was slain`);
+                ScorePanel.update(Score);
+                delete Enemies[locEnemy];
+                Enemies.splice(locEnemy, 1);
+                PLAYER.hp_max += 5;
+                PLAYER.hp += 5;
+                Narrate(`You defeat ${currEnemy.name}! Max HP + 5`);
+            }
+        };
+        currEnemy.onDeath = eOnDeath;
+        currEnemy.element.classList.add(eSelector);
+        Enemies.push(currEnemy);
+        console.log(`Placing Boss ${currEnemy.name} to start at ${testEnemyLoc[0]}, ${testEnemyLoc[1]}`);
+        const enemyCell = MAP.getCell(testEnemyLoc[0], testEnemyLoc[1]);
+        await enemyCell.Enter(currEnemy);
+    }
 }
 async function placePlayer() {
     const start = await MAP.findOpenCell();
     if (!PLAYER?.name) {
-        PLAYER = new Entity("Player", [10, 10], 1, start[0], start[1], ["player"]);
+        PLAYER = new Entity("Player", [10, 10], 1, start[0], start[1], ["player"], Die);
         console.log(`Placing player to start at ${start[0]}, ${start[1]}`);
         const startCell = MAP.getCell(start[0], start[1]);
         await startCell.Enter(PLAYER);
@@ -217,6 +344,36 @@ async function placePlayer() {
     ScorePanel.update(Score);
     Health.update(Math.floor(100 * (PLAYER.hp / PLAYER.hp_max)));
     await placeExit();
+    let numChests = Math.ceil(Math.random() * Math.ceil(Floor / 10));
+    console.log(`======== PLACING ${numChests} CHEST ========`);
+    while (numChests) {
+        const chestLoc = await MAP.findOpenCell();
+        await placeChest(chestLoc[0], chestLoc[1], new Item(Math.ceil((Floor / 100) * 10)));
+        numChests--;
+    }
+    if (Floor === 1) {
+        Narrate("Welcome to Grand Oasis! Use WASD/Arrow Keys to move. Bump into enemies to attack, or chests to open them. Touch supported on Mobile. Gamepad also supported. Space/Enter to continue.");
+    }
+    else if (Floor === 2) {
+        Narrate("Weapons only have a set durability. Use them sparingly, and watch out!");
+    }
+    else if (Floor === 3) {
+        Narrate("Can you defeat the four bosses, and make it to floor 100? Good luck!");
+    }
+}
+async function Die(Slayer) {
+    PLAYER.movable = false;
+    const deathSplash = document.createElement("div");
+    deathSplash.classList.add("deathsplash");
+    document.body.appendChild(deathSplash);
+    const deathText = document.createElement("div");
+    deathText.classList.add("deathText");
+    setTimeout(async () => {
+        deathSplash.appendChild(deathText);
+        setTimeout(async () => {
+            await Narrate(`Alas, struck down by ${Slayer?.name || "Unknown"}, your journey came to an end on floor ${Floor} [Final Score: ${Score}]. -- Play again?`);
+        }, 2000);
+    }, 2000);
 }
 async function RegisterHotkeys() {
     document.addEventListener("keydown", keyDown);
@@ -280,6 +437,12 @@ async function gamepadHandler(event, connected) {
                         if (narrator.onScreen) {
                             console.log("Closing Narrator");
                             narrator.clear();
+                            if (PLAYER.hp <= 0) {
+                                window.location.reload();
+                            }
+                            if (Floor === 1337) {
+                                window.location.href = "https://www.youtube.com/watch?v=oyFQVZ2h0V8";
+                            }
                         }
                     }
                     if (didMove) {
@@ -334,6 +497,12 @@ async function keyDown(event) {
             if (narrator.onScreen) {
                 console.log("Closing Narrator");
                 narrator.clear();
+                if (PLAYER.hp <= 0) {
+                    window.location.reload();
+                }
+                if (Floor === 1337) {
+                    window.location.href = "https://www.youtube.com/watch?v=oyFQVZ2h0V8";
+                }
             }
             break;
         case "o":
@@ -363,7 +532,18 @@ function move(direction) {
         }
     });
 }
-async function Narrate(text) {
-    narrator.explain(text, 7, 7);
+async function testHealingItem() {
+    const testItem = new Item("Non-crusted Sandwich-Like French Toast", 5, 0, "nocrust", "healing");
+    testItem.use(PLAYER);
+    Health.update(Math.floor(100 * (PLAYER.hp / PLAYER.hp_max)));
+}
+async function placeChest(x, y, item) {
+    const chest = new Chest(item, x, y);
+    const locCell = MAP.getCell(x, y);
+    locCell.Enter(chest);
+    return true;
+}
+async function Narrate(text, element) {
+    narrator.explain(text, 7, 7, element);
 }
 document.addEventListener("DOMContentLoaded", ready);

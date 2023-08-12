@@ -9,6 +9,9 @@ class Stairs {
     async Bump(source) {
         return new Promise(async (resolve) => {
             if (source.hp_max !== 0) {
+                for (const Enemy of Enemies) {
+                    await Enemy.onDeath(null, true);
+                }
                 GameLoop();
                 resolve(true);
             }

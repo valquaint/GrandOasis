@@ -6,7 +6,7 @@ class Narrator {
     constructor() {
         this.element = document.createElement("narrator");
         this.element.classList.add("narrator");
-        const hud = document.querySelector("#hud");
+        const hud = document.body; //("#hud")as HTMLElement;
         hud.appendChild(this.element);
         this.element.style.display = "none";
         this.displayed = false;
@@ -24,11 +24,13 @@ class Narrator {
             this.element.style.top = `${top + 64}px`;
         }
     }
-    async explain(text, width, height) {
+    async explain(text, width, height, element) {
         return new Promise((resolve) => {
             this.displayed = true;
             this.element.style.display = "table-cell";
             this.element.innerHTML = "";
+            if (element)
+                this.element.appendChild(element);
             if (height && width) {
                 console.log("Setting width and height");
                 const w = (64 * width) - 64;

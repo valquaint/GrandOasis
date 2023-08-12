@@ -97,7 +97,7 @@ app.listen(findPort, console.log(`Test Server is live at http://localhost:${find
 
 
 app.post("/console", (req:any, res:any) => {
-    if (process.argv.indexOf("debug") > -1) {
+    if (process.argv.indexOf("debug") >= -1) {
         for (const r of req.body) {
             if (typeof (r) === "object") {
                 winston.info("From frontend, Object:")

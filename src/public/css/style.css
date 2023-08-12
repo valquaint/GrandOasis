@@ -7,7 +7,7 @@ body {
 #hud {
     position: absolute;
     float: right;
-    z-index: 20;
+    z-index: 15;
     display: inline;
     top: 0px;
     left: 0px;
@@ -42,10 +42,7 @@ viewport {
 
 .cell {
     background-color: #000;
-}
-
-.visited {
-    /* border: 2px solid #0f0; */
+    max-height: 64px;
 }
 
 .floor {
@@ -111,16 +108,19 @@ viewport {
     image-rendering: pixelated;
 }
 
-.player.down{
+.player.down {
     background: url("../assets/player/down.gif");
 }
-.player.right{
+
+.player.right {
     background: url("../assets/player/right.gif");
 }
-.player.left{
+
+.player.left {
     background: url("../assets/player/left.gif");
 }
-.player.up{
+
+.player.up {
     background: url("../assets/player/up.gif");
 }
 
@@ -151,7 +151,7 @@ viewport {
 stat {
     display: block;
     position: relative;
-    z-index: 22;
+    z-index: 16;
     height: 32px;
     color: white;
     margin: 4px 0px 0px 0px;
@@ -162,7 +162,7 @@ stat {
     object-fit: cover;
 }
 
-.counter.score .icon{
+.counter.score .icon {
     float: left;
     position: relative;
     left: -32px;
@@ -177,12 +177,14 @@ progress {
     display: block;
     width: 128px;
 }
+
 .health .icon {
     float: left;
     left: -32px;
     position: relative;
     margin: 2px 0px;
 }
+
 stat .item.image {
     object-fit: contain;
     width: 32px;
@@ -193,6 +195,35 @@ stat .damagecounter.image {
     object-fit: contain;
     width: 32px;
     margin: 2px;
+}
+
+.held {
+    position: absolute;
+    width: 24px;
+    top: 7px;
+    left: 6px;
+}
+
+.itemDisplay{
+    height: 64px;
+    image-rendering: pixelated;
+    width: 64px;
+
+}
+
+.chest {
+    background: url("../assets/chest.png");
+    width: 64px;
+    height: 64px;
+    z-index: 7;
+    position: relative;
+    left: 0px;
+    float: inherit;
+    top: 0px;
+}
+
+.chest.open {
+    background: url("../assets/chest_open.png");
 }
 
 span.value {
@@ -215,11 +246,11 @@ stat .counter.score {
     border: 1px solid white;
     display: block;
     height: 26px;
-    margin: 4px 34px 0px 40px ;
+    margin: 4px 34px 0px 40px;
     top: 0px;
 }
 
-.counter.score span{
+.counter.score span {
     width: 100%;
     display: block;
     height: 100%;
@@ -278,8 +309,8 @@ progress::-webkit-progress-bar {
     left: 0px;
     z-index: 99;
     color: white;
-    padding:0;
-    margin:0;
+    padding: 0;
+    margin: 0;
 }
 
 #loading .loadinggear {
@@ -302,14 +333,15 @@ progress::-webkit-progress-bar {
     left: calc(50% + 32px);
     font-size: 32px;
     text-shadow: #000 1px 1px 0px, #000 -1px 1px 0px, #000 1px -1px 0px, #000 -1px -1px 0px;
-    font-family:Arial, Helvetica, sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 @keyframes rotate {
     0% {
         transform: rotate(0deg);
     }
-    100%{
+
+    100% {
         transform: rotate(360deg);
     }
 }
@@ -337,9 +369,11 @@ stairs {
     background: url("../assets/enemies/rat/left.gif");
     image-rendering: pixelated;
 }
+
 .rat.left {
     background: url("../assets/enemies/rat/left.gif");
 }
+
 .rat.right {
     background: url("../assets/enemies/rat/right.gif");
 }
@@ -348,10 +382,332 @@ stairs {
     background: url("../assets/enemies/slime/left.gif");
     image-rendering: pixelated;
 }
+
 .slime.left {
     background: url("../assets/enemies/slime/left.gif");
 }
+
 .slime.right {
     background: url("../assets/enemies/slime/left.gif");
     transform: rotateY(180deg);
+}
+
+.snake {
+    background: url("../assets/enemies/snake/left.gif");
+    image-rendering: pixelated;
+}
+
+.snake.left {
+    background: url("../assets/enemies/snake/left.gif");
+}
+
+.snake.right {
+    background: url("../assets/enemies/snake/left.gif");
+    transform: rotateY(180deg);
+}
+
+.wolf {
+    background: url("../assets/enemies/wolf/left.gif");
+    image-rendering: pixelated;
+}
+
+.wolf.left {
+    background: url("../assets/enemies/wolf/left.gif");
+}
+
+.wolf.right {
+    background: url("../assets/enemies/wolf/left.gif");
+    transform: rotateY(180deg);
+}
+
+.bear {
+    background: url("../assets/enemies/bear/left.gif");
+    image-rendering: pixelated;
+}
+
+.bear.left {
+    background: url("../assets/enemies/bear/left.gif");
+}
+
+.bear.right {
+    background: url("../assets/enemies/bear/left.gif");
+    transform: rotateY(180deg);
+}
+
+.bear.up {
+    background: url("../assets/enemies/bear/up.gif");
+}
+
+.bear.down {
+    background: url("../assets/enemies/bear/down.gif");
+    transform: rotateY(180deg);
+}
+
+.skeleton {
+    background: url("../assets/enemies/skeleton/left.gif");
+    image-rendering: pixelated;
+}
+
+.skeleton.left {
+    background: url("../assets/enemies/skeleton/left.gif");
+}
+
+.skeleton.right {
+    background: url("../assets/enemies/skeleton/left.gif");
+    transform: rotateY(180deg);
+}
+
+.skeleton.up {
+    background: url("../assets/enemies/skeleton/up.gif");
+}
+
+.skeleton.down {
+    background: url("../assets/enemies/skeleton/down.gif");
+    transform: rotateY(180deg);
+}
+
+.luna {
+    background: url("../assets/enemies/luna/left.gif");
+    image-rendering: pixelated;
+}
+
+.luna.left {
+    background: url("../assets/enemies/luna/left.gif");
+}
+
+.luna.right {
+    background: url("../assets/enemies/luna/left.gif");
+    transform: rotateY(180deg);
+}
+
+.luna.up {
+    background: url("../assets/enemies/luna/up.gif");
+}
+
+.luna.down {
+    background: url("../assets/enemies/luna/down.gif");
+    transform: rotateY(180deg);
+}
+
+.wraith {
+    background: url("../assets/enemies/wraith/left.gif");
+    image-rendering: pixelated;
+}
+
+.wraith.left {
+    background: url("../assets/enemies/wraith/left.gif");
+}
+
+.wraith.right {
+    background: url("../assets/enemies/wraith/left.gif");
+    transform: rotateY(180deg);
+}
+
+.wraith.up {
+    background: url("../assets/enemies/wraith/up.gif");
+}
+
+.wraith.down {
+    background: url("../assets/enemies/wraith/down.gif");
+    transform: rotateY(180deg);
+}
+
+.demon {
+    background: url("../assets/enemies/boss/demon/left.gif");
+    image-rendering: pixelated;
+}
+
+.demon.left {
+    background: url("../assets/enemies/boss/demon/left.gif");
+}
+
+.demon.right {
+    background: url("../assets/enemies/boss/demon/left.gif");
+    transform: rotateY(180deg);
+}
+
+.demon.up {
+    background: url("../assets/enemies/boss/demon/up.gif");
+}
+
+.demon.down {
+    background: url("../assets/enemies/boss/demon/down.gif");
+    transform: rotateY(180deg);
+}
+
+.dragon {
+    background: url("../assets/enemies/boss/dragon/left.gif");
+    image-rendering: pixelated;
+}
+
+.dragon.left {
+    background: url("../assets/enemies/boss/dragon/left.gif");
+}
+
+.dragon.right {
+    background: url("../assets/enemies/boss/dragon/left.gif");
+    transform: rotateY(180deg);
+}
+
+.dragon.up {
+    background: url("../assets/enemies/boss/dragon/up.gif");
+}
+
+.dragon.down {
+    background: url("../assets/enemies/boss/dragon/down.gif");
+    transform: rotateY(180deg);
+}
+
+.robot {
+    background: url("../assets/enemies/boss/robot/left.gif");
+    image-rendering: pixelated;
+}
+
+.robot.left {
+    background: url("../assets/enemies/boss/robot/left.gif");
+}
+
+.robot.right {
+    background: url("../assets/enemies/boss/robot/left.gif");
+    transform: rotateY(180deg);
+}
+
+.robot.up {
+    background: url("../assets/enemies/boss/robot/up.gif");
+}
+
+.robot.down {
+    background: url("../assets/enemies/boss/robot/down.gif");
+    transform: rotateY(180deg);
+}
+
+.stormy {
+    background: url("../assets/enemies/boss/stormy/left.gif");
+    image-rendering: pixelated;
+}
+
+.stormy.left {
+    background: url("../assets/enemies/boss/stormy/left.gif");
+}
+
+.stormy.right {
+    background: url("../assets/enemies/boss/stormy/left.gif");
+    transform: rotateY(180deg);
+}
+
+.stormy.up {
+    background: url("../assets/enemies/boss/stormy/up.gif");
+}
+
+.stormy.down {
+    background: url("../assets/enemies/boss/stormy/down.gif");
+    transform: rotateY(180deg);
+}
+
+/* Mobile Controls Styles */
+
+.mobileControls {
+    position: absolute;
+    float: left;
+    z-index: 80;
+    top: 0px;
+    width: 448px;
+    aspect-ratio: 1 / 1;
+}
+.mobileControls >* {
+    border: none;
+    background-color: #00000000;
+    
+}
+
+.mobileControls >* > * {
+    background-color: #ffffff88;
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+    height: 32px;
+    width: 32px;
+    transform: rotate(180deg);
+    position: absolute;
+    margin: -22px 0px 0px -16px;
+}
+
+.mobileControls .down {
+    clip-path: polygon(25% 0, 75% 0, 100% 100%, 0% 100%);
+    height: 112px;
+    width: 448px;
+    position: absolute;
+    top: 336px;
+}
+
+.mobileControls .up {
+    clip-path: polygon(25% 0, 75% 0, 100% 100%, 0% 100%);
+    height: 112px;
+    width: 448px;
+    position: absolute;
+    transform: rotate(180deg);
+}
+
+.mobileControls .left {
+    clip-path: polygon(25% 0, 75% 0, 100% 100%, 0% 100%);
+    height: 112px;
+    width: 448px;
+    position: absolute;
+    top: 168px;
+    left: -168px;
+    transform: rotate(90deg);
+}
+
+.mobileControls .right {
+    clip-path: polygon(25% 0, 75% 0, 100% 100%, 0% 100%);
+    height: 112px;
+    width: 448px;
+    position: absolute;
+    top: 168px;
+    left:168px;
+    transform: rotate(-90deg);
+}
+
+.mobileControls .confirm {
+    height: 224px;
+    width: 224px;
+    position: absolute;
+    top: 112px;
+    left: 112px;
+}
+
+/* Death Splash */
+
+.deathsplash {
+    position: absolute;
+    width: 448px;
+    height: 448px;
+    top: 0px;
+    left: 0px;
+    z-index: 18;
+    background-color: #000000;
+    display: block;
+    float:left;
+    animation: fadein 2s linear;
+}
+
+.deathText {
+    position: absolute;
+    width: 448px;
+    height: 448px;
+    top: 0px;
+    left: 0px;
+    z-index: 19;
+    display: block;
+    float:left;
+    background: url("../assets/death.png") no-repeat;
+    background-size: contain;
+    animation: fadein 2s linear;
+}
+
+@keyframes fadein {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
 }

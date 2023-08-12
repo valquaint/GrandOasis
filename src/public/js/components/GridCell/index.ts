@@ -22,7 +22,7 @@ class GridCell {
         update();
     }
 
-    public async Enter(source: Entity|Stairs, oldCell?:GridCell) {
+    public async Enter(source: Entity|Stairs|Chest, oldCell?:GridCell) {
         return new Promise(async(resolve) => {
             console.log(`${source.name} called ENTER on cell ${this.x}, ${this.y}. Cell has contents length of ${this.contents.length}`, this.contents)
             if (this.contents.length === 0) {
@@ -38,7 +38,7 @@ class GridCell {
         })
     }
 
-    public async Exit(source: Entity|Stairs) {
+    public async Exit(source: Entity|Stairs|Chest) {
         return new Promise((resolve) => {
             console.log(`${source.name} called EXIT on cell ${this.x}, ${this.y}. Cell has contents length of ${this.contents.length}`, this.contents)
             this.contents.splice(this.contents.indexOf(source), 1);

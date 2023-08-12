@@ -25,11 +25,12 @@ class Narrator {
         }
     }
 
-    async explain(text:string, width?: number, height?:number) {
+    async explain(text:string, width?: number, height?:number, element?:HTMLElement) {
         return new Promise((resolve) => {
             this.displayed = true;
             this.element.style.display = "table-cell";
             this.element.innerHTML = "";
+            if(element) this.element.appendChild(element);
             if(height && width){
                 console.log("Setting width and height")
                 const w = (64 * width)-64;

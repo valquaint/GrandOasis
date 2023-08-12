@@ -37,8 +37,10 @@ class Entity {
         return new Promise(async (resolve) => {
             if (source !== this) {
                 if (source.hp_max > 0 || this.hp_max > 0) {
-                    this.hp -= source.damage;
+                    this.hp -= (1 + source.damage);
                     console.log(`${source.name} calls BUMP on ${this.name}, dealing ${source.damage} to ${this.name}. ${this.name}'s HP is now ${this.hp}`);
+                    if (Equipped && source.hp_max > 0)
+                        Equipped.Degrade(source);
                     if (this.hp <= 0) {
                         if (this.onDeath !== undefined)
                             await this.onDeath();

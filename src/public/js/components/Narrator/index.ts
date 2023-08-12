@@ -5,7 +5,7 @@ class Narrator {
     constructor() {
         this.element = document.createElement("narrator")as HTMLElement;
         this.element.classList.add("narrator");
-        const hud = document.querySelector("#hud")as HTMLElement;
+        const hud = document.body;//("#hud")as HTMLElement;
         hud.appendChild(this.element);
         this.element.style.display = "none";
         this.displayed = false;

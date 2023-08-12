@@ -7,7 +7,7 @@ body {
 #hud {
     position: absolute;
     float: right;
-    z-index: 20;
+    z-index: 15;
     display: inline;
     top: 0px;
     left: 0px;
@@ -151,7 +151,7 @@ viewport {
 stat {
     display: block;
     position: relative;
-    z-index: 22;
+    z-index: 16;
     height: 32px;
     color: white;
     margin: 4px 0px 0px 0px;
@@ -672,4 +672,42 @@ stairs {
     position: absolute;
     top: 112px;
     left: 112px;
+}
+
+/* Death Splash */
+
+.deathsplash {
+    position: absolute;
+    width: 448px;
+    height: 448px;
+    top: 0px;
+    left: 0px;
+    z-index: 18;
+    background-color: #000000;
+    display: block;
+    float:left;
+    animation: fadein 2s linear;
+}
+
+.deathText {
+    position: absolute;
+    width: 448px;
+    height: 448px;
+    top: 0px;
+    left: 0px;
+    z-index: 19;
+    display: block;
+    float:left;
+    background: url("../assets/death.png") no-repeat;
+    background-size: contain;
+    animation: fadein 2s linear;
+}
+
+@keyframes fadein {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
 }

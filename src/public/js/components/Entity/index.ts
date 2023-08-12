@@ -37,7 +37,7 @@ class Entity {
                     console.log(`${source.name} calls BUMP on ${this.name}, dealing ${source.damage} to ${this.name}. ${this.name}'s HP is now ${this.hp}`)
                     if(Equipped && source.hp_max > 0) Equipped.Degrade(source);
                     if (this.hp <= 0) {
-                        if (this.onDeath !== undefined) await this.onDeath()
+                        if (this.onDeath !== undefined) await this.onDeath(source)
                         resolve(true)
                     }
                 }else{
@@ -121,7 +121,7 @@ class Entity {
 
 
     public get canMove(): boolean {
-        return this.movable;
+        return this.movable && this.hp>0;
     }
 
 

@@ -162,6 +162,12 @@ async function createMobileControls() {
         if (narrator.onScreen) {
             console.log("Closing Narrator");
             narrator.clear();
+            if (PLAYER.hp <= 0) {
+                window.location.reload();
+            }
+            if (Floor === 1337) {
+                window.location.href = "https://www.youtube.com/watch?v=oyFQVZ2h0V8";
+            }
         }
     });
     mobileControls.appendChild(confirmButton);
@@ -177,6 +183,10 @@ async function GameLoop() {
         columns = 10 + Math.floor((Floor / 100) * 10);
         console.log(`I will generate a ${columns} x ${rows} ${mapgen} map`);
         await Generate(mapgen);
+    }
+    else {
+        Floor = 1337;
+        Narrate(`And thus, your journey came to an end, having defeated all 100 floors in the Grand Oasis... [Final Score: ${Score}]`);
     }
 }
 async function clearMap() {
@@ -247,7 +257,7 @@ async function placeEnemies() {
         const testEnemyLoc = await MAP.findOpenCell();
         const eSelector = `F${Floor}-${numEnemies}`;
         const currEnemy = new Enemy(Math.ceil((Floor / 100) * 10), testEnemyLoc[0], testEnemyLoc[1], () => null, PLAYER);
-        const eOnDeath = async (skip) => {
+        const eOnDeath = async (source, skip) => {
             document.querySelector(`.enemy.${eSelector}`)?.remove();
             const locEnemy = Enemies.indexOf(currEnemy);
             const currCell = MAP.getCell(Enemies[locEnemy].x, Enemies[locEnemy].y);
@@ -284,7 +294,7 @@ async function placeEnemies() {
         const testEnemyLoc = await MAP.findOpenCell();
         const eSelector = `F${Floor}-${numEnemies}`;
         const currEnemy = new Boss(Math.floor(Floor / 25) - 1, testEnemyLoc[0], testEnemyLoc[1], () => null, PLAYER);
-        const eOnDeath = async (skip) => {
+        const eOnDeath = async (source, skip) => {
             document.querySelector(`.enemy.${eSelector}`)?.remove();
             const locEnemy = Enemies.indexOf(currEnemy);
             const currCell = MAP.getCell(Enemies[locEnemy].x, Enemies[locEnemy].y);
@@ -313,7 +323,7 @@ async function placeEnemies() {
 async function placePlayer() {
     const start = await MAP.findOpenCell();
     if (!PLAYER?.name) {
-        PLAYER = new Entity("Player", [10, 10], 1, start[0], start[1], ["player"]);
+        PLAYER = new Entity("Player", [10, 10], 1, start[0], start[1], ["player"], Die);
         console.log(`Placing player to start at ${start[0]}, ${start[1]}`);
         const startCell = MAP.getCell(start[0], start[1]);
         await startCell.Enter(PLAYER);
@@ -342,6 +352,20 @@ async function placePlayer() {
         await placeChest(chestLoc[0], chestLoc[1], new Item(Math.ceil((Floor / 100) * 10)));
         numChests--;
     }
+}
+async function Die(Slayer) {
+    PLAYER.movable = false;
+    const deathSplash = document.createElement("div");
+    deathSplash.classList.add("deathsplash");
+    document.body.appendChild(deathSplash);
+    const deathText = document.createElement("div");
+    deathText.classList.add("deathText");
+    setTimeout(async () => {
+        deathSplash.appendChild(deathText);
+        setTimeout(async () => {
+            await Narrate(`Alas, struck down by ${Slayer?.name || "Unknown"}, your journey came to an end on floor ${Floor} [Final Score: ${Score}]. -- Play again?`);
+        }, 2000);
+    }, 2000);
 }
 async function RegisterHotkeys() {
     document.addEventListener("keydown", keyDown);
@@ -405,6 +429,12 @@ async function gamepadHandler(event, connected) {
                         if (narrator.onScreen) {
                             console.log("Closing Narrator");
                             narrator.clear();
+                            if (PLAYER.hp <= 0) {
+                                window.location.reload();
+                            }
+                            if (Floor === 1337) {
+                                window.location.href = "https://www.youtube.com/watch?v=oyFQVZ2h0V8";
+                            }
                         }
                     }
                     if (didMove) {
@@ -459,6 +489,12 @@ async function keyDown(event) {
             if (narrator.onScreen) {
                 console.log("Closing Narrator");
                 narrator.clear();
+                if (PLAYER.hp <= 0) {
+                    window.location.reload();
+                }
+                if (Floor === 1337) {
+                    window.location.href = "https://www.youtube.com/watch?v=oyFQVZ2h0V8";
+                }
             }
             break;
         case "o":
